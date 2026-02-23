@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Digital PDF Library — Your curated academic resource hub. Browse free public documents and access premium study materials." />
+  <meta name="keywords" content="PDF library, digital books, study materials, academic resources, online reading" />
+  <meta name="theme-color" content="#0d0f14" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Digital PDF Library" />
+  <meta property="og:description" content="Curated academic PDF resources — public and premium access." />
+  <meta property="og:type"        content="website" />
+
+  <title>Digital PDF Library — Academic Resource Hub</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Google Ads: insert script tag here when ready -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body>
+
+  <!-- ============================================================
+       NAVIGATION
+       ============================================================ -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+
+      <a href="index.html" class="navbar__logo" aria-label="PDF Library home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        PDFLibrary
+      </a>
+
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link active">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="library.html" class="btn btn-outline btn-sm">Browse</a>
+        <a href="admin.html" class="btn btn-ghost btn-sm" id="nav-admin" style="display:none">⚙ Admin</a>
+        <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
+        <button class="btn btn-ghost btn-sm hidden" id="nav-logout" style="display:none">Logout</button>
+      </div>
+
+      <button class="navbar__burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link active">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link">★ Premium</a>
+  </nav>
+
+  <main>
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__bg" aria-hidden="true">
+        <div class="hero__bg-grid"></div>
+        <div class="hero__bg-glow"></div>
+      </div>
+
+      <div class="container">
+        <div class="hero__content fade-in">
+          <div class="hero__eyebrow">
+            <span class="hero__eyebrow-dot"></span>
+            Academic Digital Library Platform
+          </div>
+
+          <h1 class="hero__title" id="hero-title">
+            The Smarter Way to<br>Access Study Materials
+          </h1>
+
+          <p class="hero__subtitle">
+            Browse our curated collection of academic PDFs. Flip through
+            pages like a real book — free public resources plus an exclusive
+            premium library for serious students.
+          </p>
+
+          <div class="hero__actions">
+            <a href="library.html" class="btn btn-primary btn-lg">
+              Browse Library →
+            </a>
+            <a href="premium.html" class="btn btn-outline btn-lg">
+              ★ Premium Access
+            </a>
+          </div>
+
+          <div class="hero__stats" role="list">
+            <div class="hero__stat" role="listitem">
+              <span class="hero__stat-num">14+</span>
+              <span class="hero__stat-label">Documents</span>
+            </div>
+            <div class="hero__stat" role="listitem">
+              <span class="hero__stat-num">8</span>
+              <span class="hero__stat-label">Categories</span>
+            </div>
+            <div class="hero__stat" role="listitem">
+              <span class="hero__stat-num">Free</span>
+              <span class="hero__stat-label">Public Access</span>
+            </div>
+            <div class="hero__stat" role="listitem">
+              <span class="hero__stat-num">HD</span>
+              <span class="hero__stat-label">Flipbook Reader</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ad Placeholder — Top Banner -->
+    <div class="container">
+      <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
+        Advertisement (728×90)
+      </div>
+    </div>
+
+    <!-- ============================================================
+         FEATURES
+         ============================================================ -->
+    <section class="section features" aria-labelledby="features-title">
+      <div class="container">
+        <div class="text-center reveal">
+          <span class="section-label">Why Choose Us</span>
+          <h2 class="section-title" id="features-title">Everything You Need to Study Better</h2>
+          <p class="section-subtitle" style="margin-inline:auto">
+            A modern digital library designed for students, researchers, and lifelong learners.
+          </p>
+        </div>
+
+        <div class="features__grid stagger">
+
+          <div class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">📚</div>
+            <h3 class="feature-card__title">Organized Library</h3>
+            <p class="feature-card__desc">
+              PDFs sorted by subject and category. Quickly find what you need
+              with instant search and smart filters.
+            </p>
+          </div>
+
+          <div class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">📖</div>
+            <h3 class="feature-card__title">Flipbook Reading</h3>
+            <p class="feature-card__desc">
+              Experience documents like a real book with our smooth PageFlip
+              viewer. Desktop double-page spread, mobile single-page focus.
+            </p>
+          </div>
+
+          <div class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">★</div>
+            <h3 class="feature-card__title">Premium Content</h3>
+            <p class="feature-card__desc">
+              Advanced materials across Machine Learning, Quantum Mechanics,
+              and more — gated behind a simple one-click login.
+            </p>
+          </div>
+
+          <div class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">🔒</div>
+            <h3 class="feature-card__title">Secure Access</h3>
+            <p class="feature-card__desc">
+              Session-based authentication with localStorage. No registration
+              forms — use your seeded credentials to unlock the premium vault.
+            </p>
+          </div>
+
+          <div class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">📱</div>
+            <h3 class="feature-card__title">Fully Responsive</h3>
+            <p class="feature-card__desc">
+              Optimized for every screen size. Seamless transitions from
+              desktop reading spreads to mobile single-page mode.
+            </p>
+          </div>
+
+          <div class="feature-card reveal">
+            <div class="feature-card__icon" aria-hidden="true">⚡</div>
+            <h3 class="feature-card__title">Fast & Lightweight</h3>
+            <p class="feature-card__desc">
+              Pure static site — no server needed. Deploy on GitHub Pages,
+              Netlify, or Vercel in seconds with zero configuration.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         IMPORTANT NOTES / HOW IT WORKS
+         ============================================================ -->
+    <section class="section notes-section" aria-labelledby="notes-title">
+      <div class="container">
+        <div class="notes-grid">
+
+          <!-- Visual mockup -->
+          <div class="notes-visual reveal" aria-hidden="true">
+            <div class="notes-mockup">
+              <div class="notes-mockup__bar">
+                <div class="notes-mockup__dot" style="background:#e05c5c"></div>
+                <div class="notes-mockup__dot" style="background:#f5a623"></div>
+                <div class="notes-mockup__dot" style="background:#4caf80"></div>
+              </div>
+              <div class="notes-mockup__pages">
+                <div class="notes-mockup__page">
+                  <div class="notes-mockup__line" style="height:12px;background:rgba(200,169,110,0.3);width:70%"></div>
+                  <div class="notes-mockup__line"></div>
+                  <div class="notes-mockup__line notes-mockup__line--med"></div>
+                  <div class="notes-mockup__line notes-mockup__line--short"></div>
+                  <div class="notes-mockup__line"></div>
+                  <div class="notes-mockup__line notes-mockup__line--med"></div>
+                </div>
+                <div class="notes-mockup__page">
+                  <div class="notes-mockup__line notes-mockup__line--short"></div>
+                  <div class="notes-mockup__line"></div>
+                  <div class="notes-mockup__line notes-mockup__line--med"></div>
+                  <div class="notes-mockup__line"></div>
+                  <div class="notes-mockup__line notes-mockup__line--short"></div>
+                  <div class="notes-mockup__line"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="reveal">
+            <span class="section-label">Important Notes</span>
+            <h2 class="section-title" id="notes-title">What You Need to Know</h2>
+
+            <div class="notes-list">
+              <div class="notes-item">
+                <div class="notes-item__icon" aria-hidden="true">📄</div>
+                <div>
+                  <h4>Sample PDFs Included</h4>
+                  <p>The demo uses placeholder PDF files. Replace <code>assets/pdfs/sample.pdf</code> with your real documents and update <code>assets/data/pdfs.json</code> accordingly.</p>
+                </div>
+              </div>
+
+              <div class="notes-item">
+                <div class="notes-item__icon" aria-hidden="true">🔑</div>
+                <div>
+                  <h4>Demo Login Credentials</h4>
+                  <p>Username: <strong>admin</strong> / Password: <strong>admin123</strong> — or — Username: <strong>student</strong> / Password: <strong>student123</strong> for premium access.</p>
+                </div>
+              </div>
+
+              <div class="notes-item">
+                <div class="notes-item__icon" aria-hidden="true">🖼️</div>
+                <div>
+                  <h4>Thumbnail Images</h4>
+                  <p>Add your own cover images to <code>assets/images/</code>. The library gracefully falls back to category emoji icons when no image is found.</p>
+                </div>
+              </div>
+
+              <div class="notes-item">
+                <div class="notes-item__icon" aria-hidden="true">🚀</div>
+                <div>
+                  <h4>Static Deployment</h4>
+                  <p>No server needed. Upload the entire folder to GitHub Pages, Netlify, or Vercel. The site works entirely in the browser.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CTA
+         ============================================================ -->
+    <section class="section cta-section" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="cta-box reveal">
+          <span class="section-label">Get Started Today</span>
+          <h2 class="cta-box__title section-title" id="cta-title">Ready to Start Reading?</h2>
+          <p class="cta-box__subtitle section-subtitle" style="margin-inline:auto">
+            Browse hundreds of free academic PDFs, or unlock the premium
+            vault for advanced, in-depth study materials.
+          </p>
+          <div class="cta-box__actions">
+            <a href="library.html" class="btn btn-primary btn-lg">Browse Free Library</a>
+            <a href="premium.html" class="btn btn-outline btn-lg">★ Unlock Premium</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__logo" style="margin-bottom:0">
+            <div class="navbar__logo-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            PDFLibrary
+          </a>
+          <p>A modern academic digital library platform. Access curated study materials anywhere, on any device.</p>
+        </div>
+
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="library.html">Public Library</a></li>
+            <li><a href="premium.html">Premium Access</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="library.html">Computer Science</a></li>
+            <li><a href="library.html">Mathematics</a></li>
+            <li><a href="library.html">Physics</a></li>
+            <li><a href="library.html">Chemistry</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Use</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© 2025 PDFLibrary. All rights reserved.</span>
+        <span>Built with ❤️ for learners everywhere</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts (deferred) -->
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive PDF viewer with flipbook animation — PDFLibrary." />
+  <title>Viewer — PDFLibrary</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <style>
+    body { overflow-x: hidden; }
+
+    #flipbook-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      overflow: hidden;
+      padding: 20px 0;
+      box-sizing: border-box;
+    }
+
+    #flipbook-scale-wrap {
+      transform-origin: top center;
+    }
+
+    #pdf-flipbook {
+      /* PageFlip sizes this itself */
+    }
+
+    .viewer-arrows {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .viewer-arrows__btn {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      color: var(--clr-text);
+      border-radius: var(--radius-md);
+      padding: 10px 20px;
+      font-size: 0.88rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all var(--t-normal);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .viewer-arrows__btn:hover:not(:disabled) {
+      border-color: var(--clr-accent);
+      color: var(--clr-accent);
+    }
+    .viewer-arrows__btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .viewer-page-counter {
+      font-size: 0.88rem;
+      color: var(--clr-text-muted);
+      min-width: 120px;
+      text-align: center;
+    }
+
+    #single-page-wrapper {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      padding: 20px 16px;
+      box-sizing: border-box;
+    }
+
+    #single-page-wrapper canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .viewer-zoom {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .viewer-info-bar {
+      background: var(--clr-surface);
+      border-bottom: 1px solid var(--clr-border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.82rem;
+      color: var(--clr-text-faint);
+      flex-wrap: wrap;
+    }
+
+    .viewer-info-bar span + span::before {
+      content: '·';
+      margin: 0 8px;
+    }
+
+    @media (max-width: 640px) {
+      #flipbook-wrapper    { display: none !important; }
+      #single-page-wrapper { display: flex !important; }
+      .viewer-zoom         { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar scrolled" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDFLibrary home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        PDFLibrary
+      </a>
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="library.html" class="btn btn-outline btn-sm">← Back</a>
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
+      </div>
+      <button class="navbar__burger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link">★ Premium</a>
+  </nav>
+
+  <div class="viewer-layout">
+
+    <div class="viewer-toolbar" role="toolbar" aria-label="PDF viewer controls">
+      <a href="library.html" class="btn btn-ghost btn-sm" style="padding:8px 12px;flex-shrink:0">← Library</a>
+      <span class="viewer-toolbar__title" id="viewer-doc-title">Loading…</span>
+      <div class="viewer-toolbar__controls">
+        <div class="viewer-zoom">
+          <button class="btn btn-ghost btn-sm btn-icon" id="btn-zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+          <span id="zoom-label" style="font-size:0.82rem;color:var(--clr-text-muted);min-width:44px;text-align:center">100%</span>
+          <button class="btn btn-ghost btn-sm btn-icon" id="btn-zoom-in"  title="Zoom in"  aria-label="Zoom in">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="viewer-info-bar">
+      <div id="viewer-meta-info"></div>
+      <span id="viewer-page-info">Page — of —</span>
+    </div>
+
+    <div class="container" style="padding-block:8px">
+      <div class="ad-placeholder" style="min-height:60px;margin-block:8px" role="complementary" aria-label="Advertisement">
+        Advertisement
+      </div>
+    </div>
+
+    <main class="viewer-main" id="viewer-main" aria-label="PDF document viewer">
+
+      <div class="viewer-loading" id="viewer-loading">
+        <div class="viewer-loading__spinner" aria-hidden="true"></div>
+        <p id="viewer-loading-msg">Loading document…</p>
+      </div>
+
+      <div class="viewer-error" id="viewer-error" style="display:none">
+        <div class="viewer-error__icon" aria-hidden="true">⚠️</div>
+        <h3 style="color:var(--clr-text);margin-bottom:8px">Could Not Load Document</h3>
+        <p id="viewer-error-msg">The requested PDF could not be loaded.</p>
+        <a href="library.html" class="btn btn-primary mt-24" style="display:inline-flex">← Back to Library</a>
+      </div>
+
+      <div class="viewer-container" id="viewer-container" style="display:none">
+
+        <div id="flipbook-wrapper">
+          <div id="flipbook-scale-wrap">
+            <div id="pdf-flipbook"></div>
+          </div>
+        </div>
+
+        <div id="single-page-wrapper" aria-label="Single page PDF viewer">
+          <canvas id="single-page-canvas"></canvas>
+        </div>
+
+        <div class="viewer-arrows" role="group" aria-label="Page navigation">
+          <button class="viewer-arrows__btn" id="btn-prev" aria-label="Previous page" disabled>← Prev</button>
+          <span   class="viewer-page-counter" id="page-counter" aria-live="polite">Page 1</span>
+          <button class="viewer-arrows__btn" id="btn-next" aria-label="Next page">Next →</button>
+        </div>
+
+      </div>
+    </main>
+
+    <div class="container" style="padding-bottom:32px">
+      <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
+        Advertisement (728×90)
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+
+  <script>
+  'use strict';
+
+  const PDF_WORKER   = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const DATA_URL     = 'assets/data/pdfs.json';
+  const SCALE_RENDER = 1.5;
+  const SCALE_MOBILE = 1.6;
+
+  /*
+    Zoom range that actually works without overflow:
+      ZOOM_MIN = 0.50  → displayed as  50%
+      ZOOM_MAX = 0.75  → displayed as 100%
+    The label is remapped so the user sees a friendly 50–100% scale.
+  */
+  const ZOOM_MIN     = 0.50;
+  const ZOOM_MAX     = 0.75;
+  const ZOOM_STEP    = 0.025;          // each +/- click = ~33 display-% steps
+  const ZOOM_DEFAULT = ZOOM_MAX;       // start fully zoomed-in (100% displayed)
+
+  /* Map internal scale → friendly display percentage */
+  function displayPct(z) {
+    // linear map: ZOOM_MIN→50, ZOOM_MAX→100
+    const pct = 50 + ((z - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN)) * 50;
+    return Math.round(pct) + '%';
+  }
+
+  let pdfDoc       = null;
+  let pageFlip     = null;
+  let currentPage  = 1;
+  let totalPages   = 0;
+  let zoomScale    = ZOOM_DEFAULT;
+  let isMobile     = window.innerWidth <= 640;
+  let spreadPixelW = 0;
+
+  const $            = id => document.getElementById(id);
+  const loadingEl    = $('viewer-loading');
+  const loadingMsg   = $('viewer-loading-msg');
+  const errorEl      = $('viewer-error');
+  const errorMsgEl   = $('viewer-error-msg');
+  const container    = $('viewer-container');
+  const flipbookEl   = $('pdf-flipbook');
+  const flipWrapper  = $('flipbook-wrapper');
+  const scaleWrap    = $('flipbook-scale-wrap');
+  const singleWrap   = $('single-page-wrapper');
+  const singleCanvas = $('single-page-canvas');
+  const btnPrev      = $('btn-prev');
+  const btnNext      = $('btn-next');
+  const pageCounter  = $('page-counter');
+  const docTitle     = $('viewer-doc-title');
+  const metaInfo     = $('viewer-meta-info');
+  const pageInfo     = $('viewer-page-info');
+  const zoomLabel    = $('zoom-label');
+
+  function escapeHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function showError(html) {
+    loadingEl.style.display = 'none';
+    errorEl.style.display   = 'block';
+    errorMsgEl.innerHTML    = html || 'An unknown error occurred.';
+  }
+  function setStatus(msg) { loadingMsg.textContent = msg; }
+
+  function applyFitScale() {
+    if (!spreadPixelW) return;
+    const available  = window.innerWidth - 40;
+    const baseScale  = Math.min(1, available / spreadPixelW);
+    const finalScale = baseScale * zoomScale;
+
+    scaleWrap.style.transform       = `scale(${finalScale})`;
+    scaleWrap.style.transformOrigin = 'top center';
+
+    const naturalH = scaleWrap.offsetHeight;
+    flipWrapper.style.height = `${Math.ceil(naturalH * finalScale) + 40}px`;
+  }
+
+  function updateControls() {
+    if (isMobile) {
+      pageCounter.textContent = `Page ${currentPage} of ${totalPages}`;
+      pageInfo.textContent    = `Page ${currentPage} of ${totalPages}`;
+      btnPrev.disabled = currentPage <= 1;
+      btnNext.disabled = currentPage >= totalPages;
+    } else {
+      const idx    = pageFlip ? pageFlip.getCurrentPageIndex() : 0;
+      const spread = Math.floor(idx / 2) + 1;
+      const total  = Math.ceil(totalPages / 2);
+      pageCounter.textContent = `Spread ${spread} of ${total}`;
+      pageInfo.textContent    = `Page ${idx + 1} of ${totalPages}`;
+      btnPrev.disabled = idx <= 0;
+      btnNext.disabled = idx >= totalPages - 1;
+    }
+  }
+
+  async function renderPage(num, scale) {
+    const page = await pdfDoc.getPage(num);
+    const vp   = page.getViewport({ scale });
+    const c    = document.createElement('canvas');
+    c.width    = Math.floor(vp.width);
+    c.height   = Math.floor(vp.height);
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    return c;
+  }
+
+  async function renderMobilePage(num) {
+    /* Mobile always renders at a fixed scale — zoomScale is desktop-only */
+    const scale = SCALE_MOBILE;
+    const page  = await pdfDoc.getPage(num);
+    const vp    = page.getViewport({ scale });
+    singleCanvas.width  = Math.floor(vp.width);
+    singleCanvas.height = Math.floor(vp.height);
+    const ctx = singleCanvas.getContext('2d');
+    ctx.clearRect(0, 0, singleCanvas.width, singleCanvas.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+  }
+
+  async function buildFlipbook() {
+    const urls = [];
+    for (let i = 1; i <= totalPages; i++) {
+      setStatus(`Rendering page ${i} of ${totalPages}…`);
+      const c = await renderPage(i, SCALE_RENDER);
+      urls.push(c.toDataURL('image/jpeg', 0.92));
+    }
+
+    const vp1 = (await pdfDoc.getPage(1)).getViewport({ scale: SCALE_RENDER });
+    const PW  = Math.floor(vp1.width);
+    const PH  = Math.floor(vp1.height);
+    spreadPixelW = PW * 2;
+
+    if (pageFlip) {
+      try { pageFlip.destroy(); } catch (_) {}
+      pageFlip = null;
+    }
+    flipbookEl.innerHTML = '';
+
+    if (!window.St || typeof window.St.PageFlip !== 'function') {
+      showError('PageFlip library failed to initialise. Open DevTools (F12) → Console to see the error, then refresh.');
+      return;
+    }
+
+    pageFlip = new window.St.PageFlip(flipbookEl, {
+      width:               PW,
+      height:              PH,
+      size:                'fixed',
+      drawShadow:          true,
+      flippingTime:        600,
+      usePortrait:         false,
+      startZIndex:         1,
+      autoSize:            false,
+      maxShadowOpacity:    0.5,
+      mobileScrollSupport: false,
+      showCover:           false,
+    });
+
+    pageFlip.loadFromImages(urls);
+    setTimeout(applyFitScale, 100);
+
+    pageFlip.on('flip', e => {
+      currentPage = e.data + 1;
+      updateControls();
+    });
+
+    currentPage = 1;
+    updateControls();
+  }
+
+  async function initViewer() {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER;
+
+    /* Show the correct starting zoom label */
+    zoomLabel.textContent = displayPct(zoomScale);
+
+    const id = new URLSearchParams(location.search).get('id');
+    if (!id) { showError('No document ID specified.'); return; }
+
+    let pdfMeta = null, isPremium = false;
+    try {
+      const data = await fetch(DATA_URL).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      });
+      const pub  = data.public_pdfs  || [];
+      const prem = data.premium_pdfs || [];
+      pdfMeta    = [...pub, ...prem].find(p => p.id === id);
+      isPremium  = !!(prem.find(p => p.id === id));
+    } catch (err) {
+      showError(`Could not load library data: ${err.message}`);
+      return;
+    }
+
+    if (!pdfMeta) { showError(`Document "${escapeHtml(id)}" not found.`); return; }
+
+    if (isPremium) {
+      const session = window.Auth ? window.Auth.getSession() : null;
+      if (!session || session.role !== 'premium') {
+        showError('This is a premium document. <a href="premium.html" style="color:var(--clr-accent)">Upgrade to access →</a>');
+        return;
+      }
+    }
+
+    document.title       = `${pdfMeta.title} — PDFLibrary`;
+    docTitle.textContent = pdfMeta.title;
+    metaInfo.innerHTML   = `
+      <span>${escapeHtml(pdfMeta.category||'')}</span>
+      <span>${pdfMeta.pages||'—'} pages</span>
+      <span>${escapeHtml(pdfMeta.size||'')}</span>`;
+
+    setStatus('Loading PDF file…');
+    try {
+      pdfDoc     = await pdfjsLib.getDocument(pdfMeta.file).promise;
+      totalPages = pdfDoc.numPages;
+    } catch (err) {
+      showError(`Failed to load PDF: ${err.message}<br>Check the <code>file</code> path in pdfs.json.`);
+      return;
+    }
+
+    container.style.display = 'block';
+    isMobile = window.innerWidth <= 640;
+
+    if (isMobile) {
+      flipWrapper.style.display  = 'none';
+      singleWrap.style.display   = 'flex';
+      loadingEl.style.display    = 'none';
+      await renderMobilePage(1);
+    } else {
+      singleWrap.style.display  = 'none';
+      flipWrapper.style.display = 'flex';
+      await buildFlipbook();
+      loadingEl.style.display   = 'none';
+    }
+
+    updateControls();
+  }
+
+  btnPrev.addEventListener('click', async () => {
+    if (isMobile) {
+      if (currentPage > 1) { currentPage--; await renderMobilePage(currentPage); updateControls(); }
+    } else {
+      if (pageFlip) pageFlip.flipPrev();
+    }
+  });
+
+  btnNext.addEventListener('click', async () => {
+    if (isMobile) {
+      if (currentPage < totalPages) { currentPage++; await renderMobilePage(currentPage); updateControls(); }
+    } else {
+      if (pageFlip) pageFlip.flipNext();
+    }
+  });
+
+  function applyZoom() {
+    zoomLabel.textContent = displayPct(zoomScale);
+    /* zoom is desktop-only — mobile always fits to screen width */
+    if (!isMobile) applyFitScale();
+  }
+
+  $('btn-zoom-in').addEventListener('click', async () => {
+    if (zoomScale >= ZOOM_MAX) return;
+    zoomScale = +(Math.min(ZOOM_MAX, zoomScale + ZOOM_STEP)).toFixed(3);
+    await applyZoom();
+  });
+
+  $('btn-zoom-out').addEventListener('click', async () => {
+    if (zoomScale <= ZOOM_MIN) return;
+    zoomScale = +(Math.max(ZOOM_MIN, zoomScale - ZOOM_STEP)).toFixed(3);
+    await applyZoom();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(async () => {
+      const wasMobile = isMobile;
+      isMobile = window.innerWidth <= 640;
+      if (isMobile === wasMobile) {
+        if (!isMobile) applyFitScale();
+        return;
+      }
+      if (!pdfDoc) return;
+      if (isMobile) {
+        flipWrapper.style.display  = 'none';
+        singleWrap.style.display   = 'flex';
+        await renderMobilePage(currentPage);
+      } else {
+        singleWrap.style.display  = 'none';
+        flipWrapper.style.display = 'flex';
+        loadingEl.style.display   = 'flex';
+        await buildFlipbook();
+        loadingEl.style.display   = 'none';
+      }
+      updateControls();
+    }, 350);
+  });
+
+  window.addEventListener('DOMContentLoaded', initViewer);
+  </script>
+
+</body>
+</html>

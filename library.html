@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Browse our free public PDF library — searchable, filterable academic documents across Computer Science, Mathematics, Physics, and more." />
+  <meta name="keywords" content="free PDF library, academic documents, study materials, ebooks" />
+  <title>Public Library — PDFLibrary</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Google Ads: insert script here -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDFLibrary home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        PDFLibrary
+      </a>
+
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link active">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
+      </div>
+
+      <button class="navbar__burger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link active">Library</a>
+    <a href="premium.html" class="navbar__link">★ Premium</a>
+  </nav>
+
+  <main>
+
+    <!-- ── Library Header ── -->
+    <section class="library-header" aria-labelledby="library-title">
+      <div class="container">
+        <span class="section-label">Free Access</span>
+        <h1 id="library-title">Public Library</h1>
+        <p style="margin-top:8px;max-width:520px">
+          Browse our complete collection of freely available academic PDF documents.
+          Use the search or filter by subject to find exactly what you need.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── Ad Placeholder ── -->
+    <div class="container">
+      <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
+        Advertisement (728×90)
+      </div>
+    </div>
+
+    <!-- ── Search + Filter ── -->
+    <section class="section--sm" aria-label="Search and filter">
+      <div class="container">
+        <div class="library-controls">
+
+          <div class="search-box" role="search">
+            <span class="search-box__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </span>
+            <label for="search-input" class="sr-only">Search documents</label>
+            <input
+              type="search"
+              id="search-input"
+              placeholder="Search by title, topic, or category…"
+              autocomplete="off"
+            />
+          </div>
+
+          <label for="category-filter" class="sr-only">Filter by category</label>
+          <select id="category-filter" class="filter-select" aria-label="Filter by category">
+            <option value="">All Categories</option>
+          </select>
+
+        </div>
+
+        <p class="library-results-info" id="results-info" aria-live="polite"></p>
+
+        <!-- PDF Grid -->
+        <div class="pdf-grid" id="pdf-grid" role="list" aria-label="PDF document grid">
+          <!-- Populated by library.js -->
+          <div class="no-results" style="grid-column:1/-1">
+            <div class="no-results__icon">⏳</div>
+            <p>Loading documents…</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Ad Placeholder ── -->
+    <div class="container">
+      <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
+        Advertisement (728×90)
+      </div>
+    </div>
+
+    <!-- ── Premium Teaser ── -->
+    <section class="section cta-section" aria-labelledby="cta-premium-title">
+      <div class="container">
+        <div class="cta-box reveal">
+          <span class="section-label">Premium Vault</span>
+          <h2 class="cta-box__title section-title" id="cta-premium-title">Want More Advanced Materials?</h2>
+          <p class="cta-box__subtitle section-subtitle" style="margin-inline:auto">
+            Machine Learning, Quantum Mechanics, Advanced Calculus, and more —
+            exclusively available in our premium library.
+          </p>
+          <div class="cta-box__actions">
+            <a href="premium.html" class="btn btn-primary btn-lg">★ Unlock Premium Library</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__logo">
+            <div class="navbar__logo-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            PDFLibrary
+          </a>
+          <p>Free and premium academic PDFs. Read online with our interactive flipbook viewer.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="library.html">Library</a></li>
+            <li><a href="premium.html">Premium</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Popular</h4>
+          <ul>
+            <li><a href="viewer.html?id=data-structures">Data Structures</a></li>
+            <li><a href="viewer.html?id=calculus-notes">Calculus Notes</a></li>
+            <li><a href="viewer.html?id=physics-mechanics">Mechanics</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Use</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2025 PDFLibrary. All rights reserved.</span>
+        <span>Open-access education for everyone</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+  <script src="assets/js/library.js" defer></script>
+
+</body>
+</html>

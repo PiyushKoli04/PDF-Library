@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — PDFLibrary</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body data-page="admin">
+
+  <!-- ── Navigation ── -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDFLibrary home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        PDFLibrary
+      </a>
+
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+        <a href="admin.html"   class="navbar__link active">Admin</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none" onclick="Auth.logout('index.html')">Logout</button>
+      </div>
+
+      <button class="navbar__burger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link">Premium</a>
+    <a href="admin.html"   class="navbar__link active">Admin</a>
+  </nav>
+
+  <!-- Toast notification -->
+  <div class="admin-toast" id="admin-toast"></div>
+
+  <main>
+
+    <!-- ── ACCESS DENIED (non-admin) ── -->
+    <div id="access-denied" style="display:none;">
+      <div class="admin-access-denied">
+        <div style="font-size:3rem;">🔒</div>
+        <h2>Access Denied</h2>
+        <p>This page is restricted to administrators only.</p>
+        <a href="premium.html" class="btn btn-primary">Go to Premium Login</a>
+      </div>
+    </div>
+
+    <!-- ── ADMIN PANEL ── -->
+    <div id="admin-panel" style="display:none;">
+      <div class="admin-wrapper">
+
+        <!-- Header -->
+        <div style="margin-bottom:40px;">
+          <span class="section-label">Admin Console</span>
+          <h1 style="font-size:2rem; margin-top:8px;">User Management</h1>
+          <p style="margin-top:6px;">Review subscription requests and manage premium access.</p>
+        </div>
+
+        <!-- ── PENDING REQUESTS ── -->
+        <h2 class="admin-section-title">
+          ⏳ Pending Requests
+          <span class="admin-badge admin-badge--pending" id="pending-count">0</span>
+        </h2>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table" aria-label="Pending subscription requests">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Requested</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pending-tbody">
+              <tr class="empty-row"><td colspan="5">No pending requests.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ── VERIFIED USERS ── -->
+        <h2 class="admin-section-title">
+          ✓ Verified Premium Users
+          <span class="admin-badge admin-badge--verified" id="verified-count">0</span>
+        </h2>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table" aria-label="Verified premium users">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="verified-tbody">
+              <tr class="empty-row"><td colspan="5">No users found.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom">
+        <span>© 2025 PDFLibrary. Admin Panel.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+
+  <script>
+  'use strict';
+
+  /* ── Toast helper ── */
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('admin-toast');
+    t.textContent = msg;
+    t.className   = `admin-toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ── Format date ── */
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  /* ── Render pending table ── */
+  function renderPending() {
+    const pending = window.Store.getPending();
+    const tbody   = document.getElementById('pending-tbody');
+    document.getElementById('pending-count').textContent = pending.length;
+
+    if (!pending.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No pending requests — all clear!</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = pending.map(u => `
+      <tr>
+        <td>
+          <strong>${escHtml(u.name)}</strong>
+        </td>
+        <td><code style="font-size:0.85em;background:var(--clr-surface-2);padding:2px 6px;border-radius:4px;">${escHtml(u.username)}</code></td>
+        <td>${escHtml(u.email)}</td>
+        <td>
+          ${fmtDate(u.requestedAt)}
+        </td>
+        <td>
+          <div class="admin-actions">
+            <button class="btn-approve" onclick="approveUser('${escHtml(u.username)}')">✓ Approve</button>
+            <button class="btn-reject"  onclick="rejectUser('${escHtml(u.username)}')">✕ Reject</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  /* ── Render verified users table ── */
+  function renderVerified() {
+    const users   = window.Store.getUsers();
+    const tbody   = document.getElementById('verified-tbody');
+    const session = window.Auth.getSession();
+
+    // Exclude the current admin from revoke list (can't self-revoke)
+    document.getElementById('verified-count').textContent = users.filter(u => u.role !== 'admin').length;
+
+    if (!users.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No verified users.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = users.map(u => {
+      const isCurrentAdmin = u.username === session?.username && u.role === 'admin';
+      const roleLabel = u.role === 'admin'
+        ? '<span class="admin-badge admin-badge--count">Admin</span>'
+        : '<span class="admin-badge admin-badge--verified">Premium</span>';
+
+      const actions = isCurrentAdmin
+        ? '<span style="color:var(--clr-text-faint);font-size:0.8rem;">Current session</span>'
+        : u.role === 'admin'
+          ? '<span style="color:var(--clr-text-faint);font-size:0.8rem;">Protected</span>'
+          : `<button class="btn-revoke" onclick="revokeUser('${escHtml(u.username)}')">Revoke Access</button>`;
+
+      return `
+        <tr>
+          <td><strong>${escHtml(u.name || u.username)}</strong></td>
+          <td><code style="font-size:0.85em;background:var(--clr-surface-2);padding:2px 6px;border-radius:4px;">${escHtml(u.username)}</code></td>
+          <td>${roleLabel}</td>
+          <td><span style="color:var(--clr-success);font-size:0.82rem;">● Verified</span></td>
+          <td>${actions}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  /* ── Escape HTML ── */
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Actions ── */
+  function approveUser(username) {
+    const ok = window.Store.approvePending(username);
+    if (ok) {
+      showToast(`✓ ${username} approved and granted premium access.`, 'success');
+      renderPending();
+      renderVerified();
+    } else {
+      showToast('Could not approve user.', 'error');
+    }
+  }
+
+  function rejectUser(username) {
+    if (!confirm(`Reject subscription request from "${username}"? This cannot be undone.`)) return;
+    window.Store.rejectPending(username);
+    showToast(`Request from ${username} rejected.`, 'error');
+    renderPending();
+  }
+
+  function revokeUser(username) {
+    if (!confirm(`Revoke premium access for "${username}"? They will need to re-subscribe.`)) return;
+    window.Store.revokeUser(username);
+    showToast(`Access revoked for ${username}.`, 'error');
+    renderVerified();
+  }
+
+  /* ── Init ── */
+  window.addEventListener('DOMContentLoaded', async () => {
+    // Wait for auth.js to init Store
+    await new Promise(r => setTimeout(r, 80));
+
+    const session = window.Auth && window.Auth.getSession();
+
+    if (!session || session.role !== 'admin') {
+      document.getElementById('access-denied').style.display = 'block';
+      return;
+    }
+
+    // Show admin panel
+    document.getElementById('admin-panel').style.display = 'block';
+    const navLogout = document.getElementById('nav-logout');
+    if (navLogout) navLogout.style.display = 'inline-flex';
+
+    renderPending();
+    renderVerified();
+  });
+  </script>
+
+</body>
+</html>

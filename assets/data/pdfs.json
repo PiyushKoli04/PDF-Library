@@ -1,0 +1,177 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin",
+      "name": "Admin User",
+      "verified": true
+    },
+    {
+      "username": "student",
+      "password": "student123",
+      "role": "premium",
+      "name": "Student User",
+      "verified": true
+    }
+  ],
+  "pendingUsers": [],
+  "public_pdfs": [
+    {
+      "id": "data-structures",
+      "title": "Data Structures & Algorithms",
+      "description": "Complete coverage of arrays, linked lists, trees, graphs, sorting and searching algorithms with worked examples.",
+      "category": "Computer Science",
+      "pages": 124,
+      "size": "3.2 MB",
+      "thumbnail": "assets/images/thumb-cs.jpg",
+      "file": "assets/pdfs/mod3.pdf",
+      "featured": true
+    },
+    {
+      "id": "calculus-notes",
+      "title": "Calculus: Differential & Integral",
+      "description": "Comprehensive calculus notes from limits and derivatives through integration techniques and series expansions.",
+      "category": "Mathematics",
+      "pages": 98,
+      "size": "2.8 MB",
+      "thumbnail": "assets/images/thumb-math.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": true
+    },
+    {
+      "id": "physics-mechanics",
+      "title": "Classical Mechanics",
+      "description": "Newton's laws, kinematics, dynamics, energy, momentum, rotational motion, and oscillations thoroughly explained.",
+      "category": "Physics",
+      "pages": 110,
+      "size": "3.5 MB",
+      "thumbnail": "assets/images/thumb-physics.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    },
+    {
+      "id": "organic-chemistry",
+      "title": "Organic Chemistry Fundamentals",
+      "description": "Functional groups, reaction mechanisms, stereochemistry, and synthesis strategies for undergraduate students.",
+      "category": "Chemistry",
+      "pages": 145,
+      "size": "4.1 MB",
+      "thumbnail": "assets/images/thumb-chem.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    },
+    {
+      "id": "world-history",
+      "title": "World History: Modern Era",
+      "description": "Key events from the Industrial Revolution through the 21st century. Timelines, maps, and critical analysis.",
+      "category": "History",
+      "pages": 200,
+      "size": "5.0 MB",
+      "thumbnail": "assets/images/thumb-history.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    },
+    {
+      "id": "english-grammar",
+      "title": "Advanced English Grammar",
+      "description": "Grammar rules, syntax, punctuation, and writing style guide for academic and professional communication.",
+      "category": "Language",
+      "pages": 88,
+      "size": "2.1 MB",
+      "thumbnail": "assets/images/thumb-lang.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": true
+    },
+    {
+      "id": "linear-algebra",
+      "title": "Linear Algebra Essentials",
+      "description": "Vectors, matrices, determinants, eigenvalues, and linear transformations with visual explanations.",
+      "category": "Mathematics",
+      "pages": 112,
+      "size": "3.0 MB",
+      "thumbnail": "assets/images/thumb-math.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    },
+    {
+      "id": "networking-basics",
+      "title": "Computer Networks",
+      "description": "OSI model, TCP/IP, routing, switching, protocols, and network security fundamentals explained clearly.",
+      "category": "Computer Science",
+      "pages": 130,
+      "size": "3.8 MB",
+      "thumbnail": "assets/images/thumb-cs.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    }
+  ],
+  "premium_pdfs": [
+    {
+      "id": "machine-learning-notes",
+      "title": "Machine Learning: Complete Guide",
+      "description": "Supervised, unsupervised, reinforcement learning. Neural networks, SVMs, clustering, and model evaluation strategies.",
+      "category": "AI / ML",
+      "pages": 180,
+      "size": "6.2 MB",
+      "thumbnail": "assets/images/thumb-ml.jpg",
+      "file": "assets/pdfs/mod3.pdf",
+      "featured": true
+    },
+    {
+      "id": "advanced-calculus",
+      "title": "Advanced Calculus & Real Analysis",
+      "description": "Rigorous treatment of limits, continuity, differentiation, integration, and metric spaces for advanced students.",
+      "category": "Mathematics",
+      "pages": 210,
+      "size": "5.5 MB",
+      "thumbnail": "assets/images/thumb-math.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": true
+    },
+    {
+      "id": "quantum-physics",
+      "title": "Quantum Mechanics",
+      "description": "Wave-particle duality, Schrödinger equation, quantum states, operators, and perturbation theory.",
+      "category": "Physics",
+      "pages": 195,
+      "size": "5.8 MB",
+      "thumbnail": "assets/images/thumb-physics.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": true
+    },
+    {
+      "id": "database-systems",
+      "title": "Database Systems Design",
+      "description": "Relational models, SQL, normalization, transactions, indexing, query optimization, and NoSQL databases.",
+      "category": "Computer Science",
+      "pages": 160,
+      "size": "4.5 MB",
+      "thumbnail": "assets/images/thumb-cs.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    },
+    {
+      "id": "biochemistry-advanced",
+      "title": "Advanced Biochemistry",
+      "description": "Protein structure, enzyme kinetics, metabolic pathways, DNA replication, and gene expression in depth.",
+      "category": "Biology",
+      "pages": 220,
+      "size": "6.8 MB",
+      "thumbnail": "assets/images/thumb-bio.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    },
+    {
+      "id": "economics-theory",
+      "title": "Microeconomics & Game Theory",
+      "description": "Consumer theory, market structures, Nash equilibrium, auction theory, and welfare economics.",
+      "category": "Economics",
+      "pages": 175,
+      "size": "4.9 MB",
+      "thumbnail": "assets/images/thumb-eco.jpg",
+      "file": "assets/pdfs/sample.pdf",
+      "featured": false
+    }
+  ]
+}

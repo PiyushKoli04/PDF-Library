@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Premium PDF Library — Advanced academic documents for serious students. Login to access exclusive content." />
+  <title>Premium Library — PDFLibrary</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Google Ads: insert here -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script> -->
+</head>
+<body data-page="premium">
+
+  <!-- ── Navigation ── -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDFLibrary home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        PDFLibrary
+      </a>
+
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link active">Premium</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="library.html" class="btn btn-outline btn-sm">Free Library</a>
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none" onclick="handleLogout()">Logout</button>
+      </div>
+
+      <button class="navbar__burger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link active">★ Premium</a>
+  </nav>
+
+  <main>
+
+    <!-- ============================================================
+         LOGIN WALL (shown when not authenticated)
+         ============================================================ -->
+    <div id="login-wall">
+      <div class="login-wrapper">
+        <div class="login-card fade-in" style="max-width:460px;">
+
+          <div class="login-card__header">
+            <div class="login-card__icon" aria-hidden="true">★</div>
+            <h2>Premium Access</h2>
+            <p>Sign in or subscribe to unlock advanced academic materials.</p>
+          </div>
+
+          <!-- Tabs -->
+          <div class="auth-tabs" role="tablist">
+            <button class="auth-tab active" id="tab-login" role="tab" aria-selected="true"  onclick="switchTab('login')">Sign In</button>
+            <button class="auth-tab"        id="tab-subscribe" role="tab" aria-selected="false" onclick="switchTab('subscribe')">Subscribe</button>
+          </div>
+
+          <!-- ── LOGIN PANEL ── -->
+          <div id="panel-login">
+            <div class="form-error" id="login-error" role="alert" aria-live="polite"></div>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" class="form-input" placeholder="Enter your username" autocomplete="username" spellcheck="false" />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" />
+            </div>
+            <button type="button" class="btn btn-primary form-submit" id="login-btn" onclick="handleLogin()">Sign In →</button>
+            <p class="form-hint">
+              Demo: <strong>admin</strong> / <strong>admin123</strong>
+              &nbsp;or&nbsp;
+              <strong>student</strong> / <strong>student123</strong>
+            </p>
+          </div>
+<!-- ── SUBSCRIBE PANEL ── -->
+<div id="panel-subscribe" style="display:none;">
+  <div class="form-error"   id="sub-error"   role="alert" aria-live="polite"></div>
+  <div class="form-success" id="sub-success" role="status" aria-live="polite"></div>
+
+  <div class="form-group">
+    <label for="sub-name">Full Name</label>
+    <input type="text" id="sub-name" class="form-input" placeholder="Your full name" spellcheck="false" />
+  </div>
+  <div class="form-group">
+    <label for="sub-email">Email Address</label>
+    <input type="email" id="sub-email" class="form-input" placeholder="you@example.com" autocomplete="email" />
+  </div>
+  <div class="form-group">
+    <label for="sub-username">Choose Username</label>
+    <input type="text" id="sub-username" class="form-input" placeholder="e.g. john_doe" autocomplete="off" spellcheck="false" />
+  </div>
+  <div class="form-group">
+    <label for="sub-password">Choose Password</label>
+    <input type="password" id="sub-password" class="form-input" placeholder="Min. 6 characters" autocomplete="new-password" />
+  </div>
+  <div class="form-group">
+    <label for="sub-confirm">Confirm Password</label>
+    <input type="password" id="sub-confirm" class="form-input" placeholder="Re-enter password" autocomplete="new-password" />
+  </div>
+
+  <!-- ── Payment Section ── -->
+  <div style="
+    background: var(--clr-surface-2);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 18px;
+    text-align: center;
+  ">
+    <p style="
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--clr-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    ">Scan to Pay</p>
+
+    <img
+      src="assets/images/payment-qr.png"
+      alt="Payment QR Code"
+      style="
+        display: block;
+        margin: 0 auto 10px;
+        width: 160px;
+        height: 160px;
+        object-fit: contain;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--clr-border);
+        background: #fff;
+        padding: 6px;
+      "
+    />
+
+    <p style="font-size: 0.78rem; color: var(--clr-text-faint);">
+      Complete payment, then enter your Transaction ID below.
+    </p>
+  </div>
+
+  <div class="form-group">
+    <label for="sub-txn">Transaction ID</label>
+    <input type="text" id="sub-txn" class="form-input" placeholder="e.g. TXN1234567890" autocomplete="off" spellcheck="false" />
+  </div>
+
+  <button type="button" class="btn btn-primary form-submit" id="sub-btn" onclick="handleSubscribe()">Request Premium Access →</button>
+  <p class="form-hint">Your payment and request will be reviewed by an admin before activation.</p>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PREMIUM CONTENT (shown after authentication)
+         ============================================================ -->
+    <div id="premium-content" class="premium-content">
+
+      <!-- Header -->
+      <section class="premium-header" aria-labelledby="premium-title">
+        <div class="container">
+          <div class="premium-crown" aria-hidden="true">★</div>
+          <span class="section-label">Premium Vault</span>
+          <h1 id="premium-title">Premium Library</h1>
+          <p style="margin-top:8px;max-width:520px">
+            Exclusive advanced study materials. These in-depth documents cover
+            graduate-level topics not available in the public library.
+          </p>
+        </div>
+      </section>
+
+      <!-- Ad Placeholder -->
+      <div class="container">
+        <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
+          Advertisement (728×90)
+        </div>
+      </div>
+
+      <!-- Welcome bar -->
+      <div class="container" style="margin-top:8px">
+        <div class="premium-welcome" id="welcome-bar">
+          <div class="premium-welcome__icon" aria-hidden="true">★</div>
+          <div>
+            <h4 style="color:var(--clr-accent);margin-bottom:2px" id="welcome-name">Welcome back!</h4>
+            <p style="font-size:0.84rem">You have full access to the premium library.</p>
+          </div>
+          <button onclick="handleLogout()" class="btn btn-outline btn-sm" style="margin-left:auto">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Search + Filter -->
+      <section class="section--sm" aria-label="Search premium documents">
+        <div class="container">
+          <div class="library-controls">
+            <div class="search-box" role="search">
+              <span class="search-box__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </span>
+              <label for="search-input" class="sr-only">Search premium documents</label>
+              <input
+                type="search"
+                id="search-input"
+                placeholder="Search premium documents…"
+                autocomplete="off"
+              />
+            </div>
+
+            <label for="category-filter" class="sr-only">Filter by category</label>
+            <select id="category-filter" class="filter-select" aria-label="Filter by category">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+
+          <p class="library-results-info" id="results-info" aria-live="polite"></p>
+
+          <!-- PDF Grid -->
+          <div class="pdf-grid" id="pdf-grid" role="list" aria-label="Premium PDF document grid">
+            <div class="no-results" style="grid-column:1/-1">
+              <div class="no-results__icon">⏳</div>
+              <p>Loading premium documents…</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Ad Placeholder (bottom) -->
+      <div class="container" style="padding-bottom:32px">
+        <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
+          Advertisement (728×90)
+        </div>
+      </div>
+
+    </div><!-- /premium-content -->
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__logo">
+            <div class="navbar__logo-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            PDFLibrary
+          </a>
+          <p>Premium academic PDFs for serious students and researchers.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="library.html">Free Library</a></li>
+            <li><a href="premium.html">Premium</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Premium</h4>
+          <ul>
+            <li><a href="viewer.html?id=machine-learning-notes">Machine Learning</a></li>
+            <li><a href="viewer.html?id=advanced-calculus">Advanced Calculus</a></li>
+            <li><a href="viewer.html?id=quantum-physics">Quantum Physics</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Use</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2025 PDFLibrary. All rights reserved.</span>
+        <span>Premium content for premium learners</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+  <script src="assets/js/library.js" defer></script>
+
+  <!-- Premium page auth logic -->
+  <script>
+  'use strict';
+
+  /* ── Tab switching ── */
+  function switchTab(tab) {
+    const isLogin = tab === 'login';
+    document.getElementById('panel-login').style.display     = isLogin ? '' : 'none';
+    document.getElementById('panel-subscribe').style.display = isLogin ? 'none' : '';
+    document.getElementById('tab-login').classList.toggle('active', isLogin);
+    document.getElementById('tab-subscribe').classList.toggle('active', !isLogin);
+    // Clear messages
+    ['login-error','sub-error','sub-success'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('show');
+    });
+  }
+
+  /* ── Check session on load ── */
+  window.addEventListener('DOMContentLoaded', async () => {
+    // Store.init() is called in auth.js DOMContentLoaded, but auth.js loads before this inline script
+    // Wait a tick to ensure Store is ready
+    await new Promise(r => setTimeout(r, 50));
+
+    const session = window.Auth && window.Auth.getSession();
+    if (session && (session.role === 'premium' || session.role === 'admin')) {
+      showPremiumContent(session);
+    } else {
+      document.getElementById('login-wall').style.display = 'block';
+      document.getElementById('premium-content').classList.remove('visible');
+    }
+
+    // Enter key shortcuts
+    ['password','username'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+    });
+    ['sub-confirm','sub-password'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubscribe(); });
+    });
+  });
+
+  /* ── Show premium content ── */
+  function showPremiumContent(session) {
+    document.getElementById('login-wall').style.display = 'none';
+    document.getElementById('premium-content').classList.add('visible');
+    const welcomeName = document.getElementById('welcome-name');
+    if (welcomeName) welcomeName.textContent = `Welcome back, ${session.name || session.username}!`;
+    const navLogout = document.getElementById('nav-logout');
+    if (navLogout) navLogout.style.display = 'inline-flex';
+  }
+
+  /* ── Handle login ── */
+  function handleLogin() {
+    const btn      = document.getElementById('login-btn');
+    const errorEl  = document.getElementById('login-error');
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    errorEl.classList.remove('show');
+
+    btn.disabled    = true;
+    btn.textContent = 'Signing in…';
+
+    const result = window.Auth.login(username, password);
+
+    if (result.success) {
+      btn.textContent = '✓ Success!';
+      setTimeout(() => showPremiumContent(result.user), 400);
+    } else {
+      errorEl.textContent = result.error || 'Invalid credentials.';
+      errorEl.classList.add('show');
+      btn.disabled    = false;
+      btn.textContent = 'Sign In →';
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  }
+
+  /* ── Handle subscribe ── */
+  function handleSubscribe() {
+    const btn      = document.getElementById('sub-btn');
+    const errorEl  = document.getElementById('sub-error');
+    const successEl= document.getElementById('sub-success');
+    errorEl.classList.remove('show');
+    successEl.classList.remove('show');
+
+    const name     = document.getElementById('sub-name').value.trim();
+    const email    = document.getElementById('sub-email').value.trim();
+    const username = document.getElementById('sub-username').value.trim();
+    const password = document.getElementById('sub-password').value;
+    const confirm  = document.getElementById('sub-confirm').value;
+
+    if (!name || !email || !username || !password || !confirm) {
+      errorEl.textContent = 'Please fill in all fields.';
+      errorEl.classList.add('show');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorEl.textContent = 'Please enter a valid email address.';
+      errorEl.classList.add('show');
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      errorEl.textContent = 'Username must be 3–20 characters: letters, numbers, underscores only.';
+      errorEl.classList.add('show');
+      return;
+    }
+    if (password.length < 6) {
+      errorEl.textContent = 'Password must be at least 6 characters.';
+      errorEl.classList.add('show');
+      return;
+    }
+    if (password !== confirm) {
+      errorEl.textContent = 'Passwords do not match.';
+      errorEl.classList.add('show');
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Submitting…';
+
+    const result = window.Store.subscribe({ name, email, username, password });
+
+    if (result.success) {
+      // Clear form
+      ['sub-name','sub-email','sub-username','sub-password','sub-confirm'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      successEl.textContent = '✓ Request submitted! An admin will review and activate your account. You can then sign in using your chosen credentials.';
+      successEl.classList.add('show');
+      btn.textContent = 'Request Sent ✓';
+    } else {
+      errorEl.textContent = result.error || 'Something went wrong. Please try again.';
+      errorEl.classList.add('show');
+      btn.disabled    = false;
+      btn.textContent = 'Request Premium Access →';
+    }
+  }
+
+  /* ── Handle logout ── */
+  function handleLogout() {
+    if (window.Auth) window.Auth.clearSession();
+    document.getElementById('premium-content').classList.remove('visible');
+    document.getElementById('login-wall').style.display = 'block';
+    ['username','password'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('login-error').classList.remove('show');
+    const navLogout = document.getElementById('nav-logout');
+    if (navLogout) navLogout.style.display = 'none';
+  }
+  </script>
+
+</body>
+</html>
