@@ -1,20 +1,15 @@
 /**
  * PDF Library — auth.js
  * Firebase Firestore backend for real shared user data.
- * Session still stored in localStorage (per-browser login state only).
- *
- * Firestore collections:
- *   users/        — verified/admin accounts  (doc id = username)
- *   pendingUsers/ — awaiting admin approval  (doc id = username)
  */
 
 'use strict';
 
-/* ─────────────────────────────────────────────
-   🔥 PASTE YOUR FIREBASE CONFIG HERE
-   (Firebase Console → Project Settings → Your Apps → SDK setup)
-───────────────────────────────────────────── */
-/* ── Firebase SDK init ── */
+// Guard against double-loading
+if (typeof window.Store === 'undefined') {
+
+let _db = null;
+
 function getDB() {
   if (_db) return _db;
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
@@ -22,12 +17,8 @@ function getDB() {
   return _db;
 }
 
-/* ─────────────────────────────────────────────
-   Store — Firestore reads/writes
-───────────────────────────────────────────── */
 const Store = {
 
-  /* Seed default admin + student on first ever run */
   async init() {
     const db        = getDB();
     const adminSnap = await db.collection('users').doc('admin').get();
@@ -69,8 +60,8 @@ const Store = {
       db.collection('users').doc(usernameLower).get(),
       db.collection('pendingUsers').doc(usernameLower).get(),
     ]);
-    if (uDoc.exists)  return { success: false, error: 'Username already exists. Please choose another.' };
-    if (pDoc.exists)  return { success: false, error: 'A subscription request for this username is already pending.' };
+    if (uDoc.exists) return { success: false, error: 'Username already exists. Please choose another.' };
+    if (pDoc.exists) return { success: false, error: 'A subscription request for this username is already pending.' };
 
     await db.collection('pendingUsers').doc(usernameLower).set({
       username: usernameLower, password,
@@ -109,9 +100,6 @@ const Store = {
   },
 };
 
-/* ─────────────────────────────────────────────
-   Auth — session (localStorage, per browser)
-───────────────────────────────────────────── */
 const AUTH_KEY = 'pdflibrary_session';
 
 const Auth = {
@@ -138,7 +126,7 @@ const Auth = {
     if (!username || !password) return { success: false, error: 'Please enter both username and password.' };
     let user;
     try   { user = await Store.findUser(username); }
-    catch { return { success: false, error: 'Unable to reach the database. Check your connection.' }; }
+    catch(e) { return { success: false, error: 'Unable to reach the database. Check your connection.' }; }
     if (!user || user.password !== password) return { success: false, error: 'Invalid credentials. Please try again.' };
     if (user.verified === false)             return { success: false, error: 'Your account is pending admin verification.' };
     Auth.setSession(user);
@@ -151,9 +139,8 @@ const Auth = {
   },
 };
 
-/* ── Navbar ── */
 function updateNavAuthState() {
-  const session = Auth.getSession();
+  const session   = Auth.getSession();
   const logoutBtn = document.getElementById('nav-logout');
   const loginBtn  = document.getElementById('nav-premium');
   const adminBtn  = document.getElementById('nav-admin');
@@ -169,3 +156,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 window.Auth  = Auth;
 window.Store = Store;
+
+} // end guard
