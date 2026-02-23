@@ -10,6 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="assets/css/style.css" />
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <!-- Google Ads: insert here -->
   <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script> -->
 </head>
@@ -362,19 +366,18 @@
     if (navLogout) navLogout.style.display = 'inline-flex';
   }
 
-  /* ── Handle login ── */
-  function handleLogin() {
+  /* ── Handle login (async — Firestore) ── */
+  async function handleLogin() {
     const btn      = document.getElementById('login-btn');
     const errorEl  = document.getElementById('login-error');
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
 
     errorEl.classList.remove('show');
-
     btn.disabled    = true;
     btn.textContent = 'Signing in…';
 
-    const result = window.Auth.login(username, password);
+    const result = await window.Auth.login(username, password);
 
     if (result.success) {
       btn.textContent = '✓ Success!';
@@ -389,11 +392,11 @@
     }
   }
 
-  /* ── Handle subscribe ── */
-  function handleSubscribe() {
-    const btn      = document.getElementById('sub-btn');
-    const errorEl  = document.getElementById('sub-error');
-    const successEl= document.getElementById('sub-success');
+  /* ── Handle subscribe (async — Firestore) ── */
+  async function handleSubscribe() {
+    const btn       = document.getElementById('sub-btn');
+    const errorEl   = document.getElementById('sub-error');
+    const successEl = document.getElementById('sub-success');
     errorEl.classList.remove('show');
     successEl.classList.remove('show');
 
@@ -402,42 +405,32 @@
     const username = document.getElementById('sub-username').value.trim();
     const password = document.getElementById('sub-password').value;
     const confirm  = document.getElementById('sub-confirm').value;
+    const txn      = document.getElementById('sub-txn') ? document.getElementById('sub-txn').value.trim() : '';
 
     if (!name || !email || !username || !password || !confirm) {
-      errorEl.textContent = 'Please fill in all fields.';
-      errorEl.classList.add('show');
-      return;
+      errorEl.textContent = 'Please fill in all fields.'; errorEl.classList.add('show'); return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errorEl.textContent = 'Please enter a valid email address.';
-      errorEl.classList.add('show');
-      return;
+      errorEl.textContent = 'Please enter a valid email address.'; errorEl.classList.add('show'); return;
     }
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      errorEl.textContent = 'Username must be 3–20 characters: letters, numbers, underscores only.';
-      errorEl.classList.add('show');
-      return;
+      errorEl.textContent = 'Username must be 3–20 characters: letters, numbers, underscores only.'; errorEl.classList.add('show'); return;
     }
     if (password.length < 6) {
-      errorEl.textContent = 'Password must be at least 6 characters.';
-      errorEl.classList.add('show');
-      return;
+      errorEl.textContent = 'Password must be at least 6 characters.'; errorEl.classList.add('show'); return;
     }
     if (password !== confirm) {
-      errorEl.textContent = 'Passwords do not match.';
-      errorEl.classList.add('show');
-      return;
+      errorEl.textContent = 'Passwords do not match.'; errorEl.classList.add('show'); return;
     }
 
     btn.disabled    = true;
     btn.textContent = 'Submitting…';
 
-    const result = window.Store.subscribe({ name, email, username, password });
+    const result = await window.Store.subscribe({ name, email, username, password, txn });
 
     if (result.success) {
-      // Clear form
       ['sub-name','sub-email','sub-username','sub-password','sub-confirm'].forEach(id => {
-        document.getElementById(id).value = '';
+        const el = document.getElementById(id); if (el) el.value = '';
       });
       successEl.textContent = '✓ Request submitted! An admin will review and activate your account. You can then sign in using your chosen credentials.';
       successEl.classList.add('show');
@@ -466,4 +459,9 @@
   </script>
 
 </body>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Your config (not in git) -->
+<script src="assets/js/firebase-config.js"></script>
 </html>

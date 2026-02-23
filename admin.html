@@ -8,6 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body data-page="admin">
 
@@ -87,6 +91,7 @@
                 <th>Name</th>
                 <th>Username</th>
                 <th>Email</th>
+                <th>Txn ID</th>
                 <th>Requested</th>
                 <th>Actions</th>
               </tr>
@@ -149,34 +154,32 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  /* ── Format date ── */
-  function fmtDate(iso) {
-    if (!iso) return '—';
-    const d = new Date(iso);
+  /* ── Format date (Firestore Timestamp or ISO string) ── */
+  function fmtDate(val) {
+    if (!val) return '—';
+    const d = val.toDate ? val.toDate() : new Date(val);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   /* ── Render pending table ── */
-  function renderPending() {
-    const pending = window.Store.getPending();
-    const tbody   = document.getElementById('pending-tbody');
+  async function renderPending() {
+    const tbody = document.getElementById('pending-tbody');
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Loading…</td></tr>';
+    const pending = await window.Store.getPending();
     document.getElementById('pending-count').textContent = pending.length;
 
     if (!pending.length) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No pending requests — all clear!</td></tr>';
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No pending requests — all clear!</td></tr>';
       return;
     }
 
     tbody.innerHTML = pending.map(u => `
       <tr>
-        <td>
-          <strong>${escHtml(u.name)}</strong>
-        </td>
+        <td><strong>${escHtml(u.name)}</strong></td>
         <td><code style="font-size:0.85em;background:var(--clr-surface-2);padding:2px 6px;border-radius:4px;">${escHtml(u.username)}</code></td>
         <td>${escHtml(u.email)}</td>
-        <td>
-          ${fmtDate(u.requestedAt)}
-        </td>
+        <td>${escHtml(u.txnId || '—')}</td>
+        <td>${fmtDate(u.requestedAt)}</td>
         <td>
           <div class="admin-actions">
             <button class="btn-approve" onclick="approveUser('${escHtml(u.username)}')">✓ Approve</button>
@@ -188,12 +191,11 @@
   }
 
   /* ── Render verified users table ── */
-  function renderVerified() {
-    const users   = window.Store.getUsers();
-    const tbody   = document.getElementById('verified-tbody');
+  async function renderVerified() {
+    const tbody = document.getElementById('verified-tbody');
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Loading…</td></tr>';
+    const users   = await window.Store.getUsers();
     const session = window.Auth.getSession();
-
-    // Exclude the current admin from revoke list (can't self-revoke)
     document.getElementById('verified-count').textContent = users.filter(u => u.role !== 'admin').length;
 
     if (!users.length) {
@@ -206,13 +208,11 @@
       const roleLabel = u.role === 'admin'
         ? '<span class="admin-badge admin-badge--count">Admin</span>'
         : '<span class="admin-badge admin-badge--verified">Premium</span>';
-
       const actions = isCurrentAdmin
         ? '<span style="color:var(--clr-text-faint);font-size:0.8rem;">Current session</span>'
         : u.role === 'admin'
           ? '<span style="color:var(--clr-text-faint);font-size:0.8rem;">Protected</span>'
           : `<button class="btn-revoke" onclick="revokeUser('${escHtml(u.username)}')">Revoke Access</button>`;
-
       return `
         <tr>
           <td><strong>${escHtml(u.name || u.username)}</strong></td>
@@ -226,50 +226,44 @@
 
   /* ── Escape HTML ── */
   function escHtml(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* ── Actions ── */
-  function approveUser(username) {
-    const ok = window.Store.approvePending(username);
+  /* ── Actions (all async) ── */
+  async function approveUser(username) {
+    const ok = await window.Store.approvePending(username);
     if (ok) {
       showToast(`✓ ${username} approved and granted premium access.`, 'success');
-      renderPending();
-      renderVerified();
+      renderPending(); renderVerified();
     } else {
       showToast('Could not approve user.', 'error');
     }
   }
 
-  function rejectUser(username) {
+  async function rejectUser(username) {
     if (!confirm(`Reject subscription request from "${username}"? This cannot be undone.`)) return;
-    window.Store.rejectPending(username);
+    await window.Store.rejectPending(username);
     showToast(`Request from ${username} rejected.`, 'error');
     renderPending();
   }
 
-  function revokeUser(username) {
+  async function revokeUser(username) {
     if (!confirm(`Revoke premium access for "${username}"? They will need to re-subscribe.`)) return;
-    window.Store.revokeUser(username);
+    await window.Store.revokeUser(username);
     showToast(`Access revoked for ${username}.`, 'error');
     renderVerified();
   }
 
   /* ── Init ── */
   window.addEventListener('DOMContentLoaded', async () => {
-    // Wait for auth.js to init Store
-    await new Promise(r => setTimeout(r, 80));
+    await new Promise(r => setTimeout(r, 100)); // wait for auth.js + Firebase init
 
     const session = window.Auth && window.Auth.getSession();
-
     if (!session || session.role !== 'admin') {
       document.getElementById('access-denied').style.display = 'block';
       return;
     }
 
-    // Show admin panel
     document.getElementById('admin-panel').style.display = 'block';
     const navLogout = document.getElementById('nav-logout');
     if (navLogout) navLogout.style.display = 'inline-flex';
@@ -278,6 +272,10 @@
     renderVerified();
   });
   </script>
-
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Your config (not in git) -->
+<script src="assets/js/firebase-config.js"></script>
 </body>
 </html>

@@ -1,166 +1,146 @@
 /**
  * PDF Library — auth.js
- * Static authentication using localStorage-persisted JSON credentials
- * Session stored in localStorage (no backend required)
+ * Firebase Firestore backend for real shared user data.
+ * Session still stored in localStorage (per-browser login state only).
+ *
+ * Firestore collections:
+ *   users/        — verified/admin accounts  (doc id = username)
+ *   pendingUsers/ — awaiting admin approval  (doc id = username)
  */
 
 'use strict';
 
-const AUTH_KEY     = 'pdflibrary_session';
-const USERS_KEY    = 'pdflibrary_users';       // mirrors users[] from pdfs.json
-const PENDING_KEY  = 'pdflibrary_pending';     // pending subscription requests
+/* ─────────────────────────────────────────────
+   🔥 PASTE YOUR FIREBASE CONFIG HERE
+   (Firebase Console → Project Settings → Your Apps → SDK setup)
+───────────────────────────────────────────── */
+/* ── Firebase SDK init ── */
+function getDB() {
+  if (_db) return _db;
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  _db = firebase.firestore();
+  return _db;
+}
 
-/* ── Data store helpers (localStorage-backed JSON "database") ── */
+/* ─────────────────────────────────────────────
+   Store — Firestore reads/writes
+───────────────────────────────────────────── */
 const Store = {
-  /** Initialise local store from fetched JSON if not already done */
+
+  /* Seed default admin + student on first ever run */
   async init() {
-    if (!localStorage.getItem(USERS_KEY)) {
-      try {
-        const data = await fetch('assets/data/pdfs.json').then(r => r.json());
-        localStorage.setItem(USERS_KEY,   JSON.stringify(data.users        || []));
-        localStorage.setItem(PENDING_KEY, JSON.stringify(data.pendingUsers || []));
-      } catch {
-        localStorage.setItem(USERS_KEY,   JSON.stringify([]));
-        localStorage.setItem(PENDING_KEY, JSON.stringify([]));
-      }
+    const db        = getDB();
+    const adminSnap = await db.collection('users').doc('admin').get();
+    if (!adminSnap.exists) {
+      const batch = db.batch();
+      batch.set(db.collection('users').doc('admin'), {
+        username: 'admin', password: 'admin123',
+        name: 'Admin User', role: 'admin', verified: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      batch.set(db.collection('users').doc('student'), {
+        username: 'student', password: 'student123',
+        name: 'Student User', role: 'premium', verified: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      await batch.commit();
     }
   },
 
-  getUsers()   { try { return JSON.parse(localStorage.getItem(USERS_KEY))   || []; } catch { return []; } },
-  getPending() { try { return JSON.parse(localStorage.getItem(PENDING_KEY)) || []; } catch { return []; } },
-
-  saveUsers(arr)   { localStorage.setItem(USERS_KEY,   JSON.stringify(arr)); },
-  savePending(arr) { localStorage.setItem(PENDING_KEY, JSON.stringify(arr)); },
-
-  findUser(username) {
-    return this.getUsers().find(u => u.username === username.trim().toLowerCase());
+  async getUsers() {
+    const snap = await getDB().collection('users').get();
+    return snap.docs.map(d => d.data());
   },
 
-  /**
-   * Register a new pending subscription.
-   * Returns { success, error }
-   */
-  subscribe({ name, username, password, email }) {
-    const users   = this.getUsers();
-    const pending = this.getPending();
+  async getPending() {
+    const snap = await getDB().collection('pendingUsers').orderBy('requestedAt', 'desc').get();
+    return snap.docs.map(d => d.data());
+  },
 
+  async findUser(username) {
+    const doc = await getDB().collection('users').doc(username.trim().toLowerCase()).get();
+    return doc.exists ? doc.data() : null;
+  },
+
+  async subscribe({ name, username, password, email, txn }) {
+    const db            = getDB();
     const usernameLower = username.trim().toLowerCase();
+    const [uDoc, pDoc]  = await Promise.all([
+      db.collection('users').doc(usernameLower).get(),
+      db.collection('pendingUsers').doc(usernameLower).get(),
+    ]);
+    if (uDoc.exists)  return { success: false, error: 'Username already exists. Please choose another.' };
+    if (pDoc.exists)  return { success: false, error: 'A subscription request for this username is already pending.' };
 
-    if (users.find(u => u.username === usernameLower)) {
-      return { success: false, error: 'Username already exists. Please choose another.' };
-    }
-    if (pending.find(u => u.username === usernameLower)) {
-      return { success: false, error: 'A subscription request for this username is already pending.' };
-    }
-
-    const newEntry = {
-      username:  usernameLower,
-      password,
-      name:      name.trim(),
-      email:     email.trim().toLowerCase(),
-      role:      'premium',
-      verified:  false,
-      requestedAt: new Date().toISOString(),
-    };
-
-    pending.push(newEntry);
-    this.savePending(pending);
+    await db.collection('pendingUsers').doc(usernameLower).set({
+      username: usernameLower, password,
+      name: name.trim(), email: email.trim().toLowerCase(),
+      txnId: txn ? txn.trim() : '',
+      role: 'premium', verified: false,
+      requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
     return { success: true };
   },
 
-  /**
-   * Admin: approve a pending user → move to users[]
-   */
-  approvePending(username) {
-    const pending = this.getPending();
-    const idx     = pending.findIndex(u => u.username === username);
-    if (idx === -1) return false;
-
-    const [user]  = pending.splice(idx, 1);
-    user.verified = true;
-
-    const users = this.getUsers();
-    users.push(user);
-
-    this.savePending(pending);
-    this.saveUsers(users);
+  async approvePending(username) {
+    const db  = getDB();
+    const doc = await db.collection('pendingUsers').doc(username).get();
+    if (!doc.exists) return false;
+    const batch = db.batch();
+    batch.set(db.collection('users').doc(username), {
+      ...doc.data(), verified: true,
+      approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    batch.delete(db.collection('pendingUsers').doc(username));
+    await batch.commit();
     return true;
   },
 
-  /**
-   * Admin: reject / delete a pending user
-   */
-  rejectPending(username) {
-    const pending = this.getPending().filter(u => u.username !== username);
-    this.savePending(pending);
+  async rejectPending(username) {
+    await getDB().collection('pendingUsers').doc(username).delete();
     return true;
   },
 
-  /**
-   * Admin: revoke an already-approved premium user
-   */
-  revokeUser(username) {
-    const users = this.getUsers().filter(u => u.username !== username || u.role === 'admin');
-    this.saveUsers(users);
+  async revokeUser(username) {
+    const doc = await getDB().collection('users').doc(username).get();
+    if (!doc.exists || doc.data().role === 'admin') return false;
+    await getDB().collection('users').doc(username).delete();
     return true;
   },
 };
 
-/* ── Session helpers ── */
-const Auth = {
+/* ─────────────────────────────────────────────
+   Auth — session (localStorage, per browser)
+───────────────────────────────────────────── */
+const AUTH_KEY = 'pdflibrary_session';
 
+const Auth = {
   setSession(user) {
-    const session = {
-      username: user.username,
-      name:     user.name,
-      role:     user.role,
-      ts:       Date.now(),
-    };
-    localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+    localStorage.setItem(AUTH_KEY, JSON.stringify({
+      username: user.username, name: user.name, role: user.role, ts: Date.now(),
+    }));
   },
 
   getSession() {
     try {
-      const raw = localStorage.getItem(AUTH_KEY);
-      if (!raw) return null;
-      const session = JSON.parse(raw);
-      if (Date.now() - session.ts > 86_400_000) {
-        Auth.clearSession();
-        return null;
-      }
-      return session;
-    } catch {
-      return null;
-    }
+      const s = JSON.parse(localStorage.getItem(AUTH_KEY));
+      if (!s) return null;
+      if (Date.now() - s.ts > 86_400_000) { Auth.clearSession(); return null; }
+      return s;
+    } catch { return null; }
   },
 
   clearSession() { localStorage.removeItem(AUTH_KEY); },
+  isPremium()    { const s = Auth.getSession(); return s && (s.role === 'premium' || s.role === 'admin'); },
+  isAdmin()      { const s = Auth.getSession(); return s && s.role === 'admin'; },
 
-  isPremium() {
-    const s = Auth.getSession();
-    return s && (s.role === 'premium' || s.role === 'admin');
-  },
-
-  isAdmin() {
-    const s = Auth.getSession();
-    return s && s.role === 'admin';
-  },
-
-  /**
-   * Attempt login against local store.
-   * Checks verified flag before allowing access.
-   */
-  login(username, password) {
-    if (!username || !password) {
-      return { success: false, error: 'Please enter both username and password.' };
-    }
-    const user = Store.findUser(username);
-    if (!user || user.password !== password) {
-      return { success: false, error: 'Invalid credentials. Please try again.' };
-    }
-    if (user.verified === false) {
-      return { success: false, error: 'Your account is pending admin verification. Please wait for approval.' };
-    }
+  async login(username, password) {
+    if (!username || !password) return { success: false, error: 'Please enter both username and password.' };
+    let user;
+    try   { user = await Store.findUser(username); }
+    catch { return { success: false, error: 'Unable to reach the database. Check your connection.' }; }
+    if (!user || user.password !== password) return { success: false, error: 'Invalid credentials. Please try again.' };
+    if (user.verified === false)             return { success: false, error: 'Your account is pending admin verification.' };
     Auth.setSession(user);
     return { success: true, user };
   },
@@ -171,30 +151,21 @@ const Auth = {
   },
 };
 
-/* ── Update nav auth state ── */
+/* ── Navbar ── */
 function updateNavAuthState() {
-  const session   = Auth.getSession();
+  const session = Auth.getSession();
   const logoutBtn = document.getElementById('nav-logout');
   const loginBtn  = document.getElementById('nav-premium');
   const adminBtn  = document.getElementById('nav-admin');
-
-  if (logoutBtn) {
-    logoutBtn.style.display = session ? 'inline-flex' : 'none';
-    logoutBtn.onclick = () => Auth.logout('index.html');
-  }
-  if (loginBtn && session) {
-    loginBtn.textContent = '★ Premium';
-  }
-  if (adminBtn) {
-    adminBtn.style.display = (session && session.role === 'admin') ? 'inline-flex' : 'none';
-  }
+  if (logoutBtn) { logoutBtn.style.display = session ? 'inline-flex' : 'none'; logoutBtn.onclick = () => Auth.logout('index.html'); }
+  if (loginBtn && session) loginBtn.textContent = '★ Premium';
+  if (adminBtn) adminBtn.style.display = (session && session.role === 'admin') ? 'inline-flex' : 'none';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await Store.init();
+  try { await Store.init(); } catch(e) { console.warn('Firebase init:', e.message); }
   updateNavAuthState();
 });
 
-/* ── Expose globally ── */
 window.Auth  = Auth;
 window.Store = Store;
