@@ -24,7 +24,7 @@
       "category": "Computer Science",
       "pages": 124,
       "size": "3.2 MB",
-      "thumbnail": "assets/images/thumb-cs.jpg",
+      "thumbnail": "assets/images/ct.png",
       "file": "assets/pdfs/mod3.pdf",
       "featured": true
     },
@@ -36,7 +36,7 @@
       "pages": 98,
       "size": "2.8 MB",
       "thumbnail": "assets/images/thumb-math.jpg",
-      "file": "assets/pdfs/sample.pdf",
+      "file": "assets/pdfs/mod3.pdf",
       "featured": true
     },
     {
@@ -114,7 +114,7 @@
       "category": "AI / ML",
       "pages": 180,
       "size": "6.2 MB",
-      "thumbnail": "assets/images/thumb-ml.jpg",
+      "thumbnail": "assets/images/ct.png",
       "file": "assets/pdfs/mod3.pdf",
       "featured": true
     },

@@ -11,12 +11,62 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 
   <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="assets/js/firebase-config.js"></script>
-<script src="assets/js/auth.js"></script>
-  <!-- Google Ads: insert here -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/auth.js"></script>
+
+  <style>
+    /* Hide desktop action buttons on mobile — burger menu handles them */
+    @media (max-width: 768px) {
+      .navbar__actions { display: none !important; }
+    }
+
+    /* Mobile nav actions block */
+    .navbar__mobile-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 16px 8px;
+      border-top: 1px solid var(--clr-border, rgba(255,255,255,0.08));
+      margin-top: 4px;
+    }
+    .navbar__mobile-actions .btn {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* Card cover: fixed height, image cropped, badge overlaid */
+    .pdf-card__cover {
+      position: relative !important;
+      height: 200px !important;
+      overflow: hidden !important;
+      flex-shrink: 0;
+    }
+    .pdf-card__cover img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center top !important;
+      display: block !important;
+    }
+    .pdf-card__badge {
+      position: absolute !important;
+      top: 10px !important;
+      left: 10px !important;
+      z-index: 2 !important;
+    }
+    .pdf-card__cover-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body data-page="premium">
 
@@ -39,6 +89,7 @@
         <a href="premium.html" class="navbar__link active">Premium</a>
       </nav>
 
+      <!-- Desktop only -->
       <div class="navbar__actions">
         <a href="library.html" class="btn btn-outline btn-sm">Free Library</a>
         <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none" onclick="handleLogout()">Logout</button>
@@ -50,17 +101,20 @@
     </div>
   </header>
 
+  <!-- Mobile nav — burger menu contains ALL buttons -->
   <nav class="navbar__mobile" aria-label="Mobile navigation">
     <a href="index.html"   class="navbar__link">Home</a>
     <a href="library.html" class="navbar__link">Library</a>
     <a href="premium.html" class="navbar__link active">★ Premium</a>
+    <div class="navbar__mobile-actions">
+      <a href="library.html" class="btn btn-outline btn-sm">Free Library</a>
+      <button class="btn btn-ghost btn-sm" id="mobile-nav-logout" style="display:none" onclick="handleLogout()">Logout</button>
+    </div>
   </nav>
 
   <main>
 
-    <!-- ============================================================
-         LOGIN WALL (shown when not authenticated)
-         ============================================================ -->
+    <!-- ── LOGIN WALL ── -->
     <div id="login-wall">
       <div class="login-wrapper">
         <div class="login-card fade-in" style="max-width:460px;">
@@ -73,11 +127,11 @@
 
           <!-- Tabs -->
           <div class="auth-tabs" role="tablist">
-            <button class="auth-tab active" id="tab-login" role="tab" aria-selected="true"  onclick="switchTab('login')">Sign In</button>
+            <button class="auth-tab active" id="tab-login"     role="tab" aria-selected="true"  onclick="switchTab('login')">Sign In</button>
             <button class="auth-tab"        id="tab-subscribe" role="tab" aria-selected="false" onclick="switchTab('subscribe')">Subscribe</button>
           </div>
 
-          <!-- ── LOGIN PANEL ── -->
+          <!-- LOGIN PANEL -->
           <div id="panel-login">
             <div class="form-error" id="login-error" role="alert" aria-live="polite"></div>
             <div class="form-group">
@@ -95,90 +149,60 @@
               <strong>student</strong> / <strong>student123</strong>
             </p>
           </div>
-<!-- ── SUBSCRIBE PANEL ── -->
-<div id="panel-subscribe" style="display:none;">
-  <div class="form-error"   id="sub-error"   role="alert" aria-live="polite"></div>
-  <div class="form-success" id="sub-success" role="status" aria-live="polite"></div>
 
-  <div class="form-group">
-    <label for="sub-name">Full Name</label>
-    <input type="text" id="sub-name" class="form-input" placeholder="Your full name" spellcheck="false" />
-  </div>
-  <div class="form-group">
-    <label for="sub-email">Email Address</label>
-    <input type="email" id="sub-email" class="form-input" placeholder="you@example.com" autocomplete="email" />
-  </div>
-  <div class="form-group">
-    <label for="sub-username">Choose Username</label>
-    <input type="text" id="sub-username" class="form-input" placeholder="e.g. john_doe" autocomplete="off" spellcheck="false" />
-  </div>
-  <div class="form-group">
-    <label for="sub-password">Choose Password</label>
-    <input type="password" id="sub-password" class="form-input" placeholder="Min. 6 characters" autocomplete="new-password" />
-  </div>
-  <div class="form-group">
-    <label for="sub-confirm">Confirm Password</label>
-    <input type="password" id="sub-confirm" class="form-input" placeholder="Re-enter password" autocomplete="new-password" />
-  </div>
+          <!-- SUBSCRIBE PANEL -->
+          <div id="panel-subscribe" style="display:none;">
+            <div class="form-error"   id="sub-error"   role="alert"  aria-live="polite"></div>
+            <div class="form-success" id="sub-success" role="status" aria-live="polite"></div>
 
-  <!-- ── Payment Section ── -->
-  <div style="
-    background: var(--clr-surface-2);
-    border: 1px solid var(--clr-border);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    margin-bottom: 18px;
-    text-align: center;
-  ">
-    <p style="
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--clr-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 12px;
-    ">Scan to Pay</p>
+            <div class="form-group">
+              <label for="sub-name">Full Name</label>
+              <input type="text" id="sub-name" class="form-input" placeholder="Your full name" spellcheck="false" />
+            </div>
+            <div class="form-group">
+              <label for="sub-email">Email Address</label>
+              <input type="email" id="sub-email" class="form-input" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="sub-username">Choose Username</label>
+              <input type="text" id="sub-username" class="form-input" placeholder="e.g. john_doe" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="form-group">
+              <label for="sub-password">Choose Password</label>
+              <input type="password" id="sub-password" class="form-input" placeholder="Min. 6 characters" autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+              <label for="sub-confirm">Confirm Password</label>
+              <input type="password" id="sub-confirm" class="form-input" placeholder="Re-enter password" autocomplete="new-password" />
+            </div>
 
-    <img
-      src="assets/images/payment-qr.png"
-      alt="Payment QR Code"
-      style="
-        display: block;
-        margin: 0 auto 10px;
-        width: 160px;
-        height: 160px;
-        object-fit: contain;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--clr-border);
-        background: #fff;
-        padding: 6px;
-      "
-    />
+            <!-- Payment Section -->
+            <div style="background:var(--clr-surface-2);border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:16px;margin-bottom:18px;text-align:center;">
+              <p style="font-size:0.82rem;font-weight:600;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Scan to Pay</p>
+              <img
+                src="assets/images/payment-qr.png"
+                alt="Payment QR Code"
+                style="display:block;margin:0 auto 10px;width:160px;height:160px;object-fit:contain;border-radius:var(--radius-sm);border:1px solid var(--clr-border);background:#fff;padding:6px;"
+              />
+              <p style="font-size:0.78rem;color:var(--clr-text-faint);">Complete payment, then enter your Transaction ID below.</p>
+            </div>
 
-    <p style="font-size: 0.78rem; color: var(--clr-text-faint);">
-      Complete payment, then enter your Transaction ID below.
-    </p>
-  </div>
+            <div class="form-group">
+              <label for="sub-txn">Transaction ID</label>
+              <input type="text" id="sub-txn" class="form-input" placeholder="e.g. TXN1234567890" autocomplete="off" spellcheck="false" />
+            </div>
 
-  <div class="form-group">
-    <label for="sub-txn">Transaction ID</label>
-    <input type="text" id="sub-txn" class="form-input" placeholder="e.g. TXN1234567890" autocomplete="off" spellcheck="false" />
-  </div>
-
-  <button type="button" class="btn btn-primary form-submit" id="sub-btn" onclick="handleSubscribe()">Request Premium Access →</button>
-  <p class="form-hint">Your payment and request will be reviewed by an admin before activation.</p>
-</div>
+            <button type="button" class="btn btn-primary form-submit" id="sub-btn" onclick="handleSubscribe()">Request Premium Access →</button>
+            <p class="form-hint">Your payment and request will be reviewed by an admin before activation.</p>
+          </div>
 
         </div>
       </div>
     </div>
 
-    <!-- ============================================================
-         PREMIUM CONTENT (shown after authentication)
-         ============================================================ -->
+    <!-- ── PREMIUM CONTENT ── -->
     <div id="premium-content" class="premium-content">
 
-      <!-- Header -->
       <section class="premium-header" aria-labelledby="premium-title">
         <div class="container">
           <div class="premium-crown" aria-hidden="true">★</div>
@@ -191,14 +215,12 @@
         </div>
       </section>
 
-      <!-- Ad Placeholder -->
       <div class="container">
         <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
           Advertisement (728×90)
         </div>
       </div>
 
-      <!-- Welcome bar -->
       <div class="container" style="margin-top:8px">
         <div class="premium-welcome" id="welcome-bar">
           <div class="premium-welcome__icon" aria-hidden="true">★</div>
@@ -206,13 +228,10 @@
             <h4 style="color:var(--clr-accent);margin-bottom:2px" id="welcome-name">Welcome back!</h4>
             <p style="font-size:0.84rem">You have full access to the premium library.</p>
           </div>
-          <button onclick="handleLogout()" class="btn btn-outline btn-sm" style="margin-left:auto">
-            Logout
-          </button>
+          <button onclick="handleLogout()" class="btn btn-outline btn-sm" style="margin-left:auto">Logout</button>
         </div>
       </div>
 
-      <!-- Search + Filter -->
       <section class="section--sm" aria-label="Search premium documents">
         <div class="container">
           <div class="library-controls">
@@ -223,14 +242,8 @@
                 </svg>
               </span>
               <label for="search-input" class="sr-only">Search premium documents</label>
-              <input
-                type="search"
-                id="search-input"
-                placeholder="Search premium documents…"
-                autocomplete="off"
-              />
+              <input type="search" id="search-input" placeholder="Search premium documents…" autocomplete="off" />
             </div>
-
             <label for="category-filter" class="sr-only">Filter by category</label>
             <select id="category-filter" class="filter-select" aria-label="Filter by category">
               <option value="">All Categories</option>
@@ -239,18 +252,15 @@
 
           <p class="library-results-info" id="results-info" aria-live="polite"></p>
 
-          <!-- PDF Grid -->
           <div class="pdf-grid" id="pdf-grid" role="list" aria-label="Premium PDF document grid">
             <div class="no-results" style="grid-column:1/-1">
               <div class="no-results__icon">⏳</div>
               <p>Loading premium documents…</p>
             </div>
           </div>
-
         </div>
       </section>
 
-      <!-- Ad Placeholder (bottom) -->
       <div class="container" style="padding-bottom:32px">
         <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
           Advertisement (728×90)
@@ -314,9 +324,14 @@
   <script src="assets/js/auth.js" defer></script>
   <script src="assets/js/library.js" defer></script>
 
-  <!-- Premium page auth logic -->
   <script>
   'use strict';
+
+  /* ── Sync mobile logout with desktop ── */
+  function syncMobileLogout(show) {
+    const el = document.getElementById('mobile-nav-logout');
+    if (el) el.style.display = show ? 'inline-flex' : 'none';
+  }
 
   /* ── Tab switching ── */
   function switchTab(tab) {
@@ -325,7 +340,6 @@
     document.getElementById('panel-subscribe').style.display = isLogin ? 'none' : '';
     document.getElementById('tab-login').classList.toggle('active', isLogin);
     document.getElementById('tab-subscribe').classList.toggle('active', !isLogin);
-    // Clear messages
     ['login-error','sub-error','sub-success'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.remove('show');
@@ -334,24 +348,21 @@
 
   /* ── Check session on load ── */
   window.addEventListener('DOMContentLoaded', async () => {
-    // Store.init() is called in auth.js DOMContentLoaded, but auth.js loads before this inline script
-    // Wait a tick to ensure Store is ready
     await new Promise(r => setTimeout(r, 50));
-
     const session = window.Auth && window.Auth.getSession();
     if (session && (session.role === 'premium' || session.role === 'admin')) {
       showPremiumContent(session);
     } else {
       document.getElementById('login-wall').style.display = 'block';
       document.getElementById('premium-content').classList.remove('visible');
+      syncMobileLogout(false);
     }
 
-    // Enter key shortcuts
     ['password','username'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
     });
-    ['sub-confirm','sub-password'].forEach(id => {
+    ['sub-confirm','sub-txn'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubscribe(); });
     });
@@ -365,9 +376,10 @@
     if (welcomeName) welcomeName.textContent = `Welcome back, ${session.name || session.username}!`;
     const navLogout = document.getElementById('nav-logout');
     if (navLogout) navLogout.style.display = 'inline-flex';
+    syncMobileLogout(true);
   }
 
-  /* ── Handle login (async — Firestore) ── */
+  /* ── Handle login ── */
   async function handleLogin() {
     const btn      = document.getElementById('login-btn');
     const errorEl  = document.getElementById('login-error');
@@ -393,7 +405,7 @@
     }
   }
 
-  /* ── Handle subscribe (async — Firestore) ── */
+  /* ── Handle subscribe ── */
   async function handleSubscribe() {
     const btn       = document.getElementById('sub-btn');
     const errorEl   = document.getElementById('sub-error');
@@ -433,7 +445,7 @@
       ['sub-name','sub-email','sub-username','sub-password','sub-confirm'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
-      successEl.textContent = '✓ Request submitted! An admin will review and activate your account. You can then sign in using your chosen credentials.';
+      successEl.textContent = '✓ Request submitted! An admin will review and activate your account.';
       successEl.classList.add('show');
       btn.textContent = 'Request Sent ✓';
     } else {
@@ -450,15 +462,14 @@
     document.getElementById('premium-content').classList.remove('visible');
     document.getElementById('login-wall').style.display = 'block';
     ['username','password'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
+      const el = document.getElementById(id); if (el) el.value = '';
     });
     document.getElementById('login-error').classList.remove('show');
     const navLogout = document.getElementById('nav-logout');
     if (navLogout) navLogout.style.display = 'none';
+    syncMobileLogout(false);
   }
   </script>
 
 </body>
-
 </html>

@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="assets/css/style.css" />
-<script src="assets/js/firebase-config.js"></script>
-<script src="assets/js/auth.js" defer></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/auth.js" defer></script>
   <style>
     body { overflow-x: hidden; }
 
@@ -19,17 +19,13 @@
       justify-content: center;
       align-items: flex-start;
       width: 100%;
-      overflow: hidden;
-      padding: 20px 0;
+      overflow: visible;        /* was hidden — caused lateral edge clipping */
+      padding: 20px 24px;       /* generous sides so page shadows never clip */
       box-sizing: border-box;
     }
 
     #flipbook-scale-wrap {
       transform-origin: top center;
-    }
-
-    #pdf-flipbook {
-      /* PageFlip sizes this itself */
     }
 
     .viewer-arrows {
@@ -106,7 +102,6 @@
       color: var(--clr-text-faint);
       flex-wrap: wrap;
     }
-
     .viewer-info-bar span + span::before {
       content: '·';
       margin: 0 8px;
@@ -116,6 +111,106 @@
       #flipbook-wrapper    { display: none !important; }
       #single-page-wrapper { display: flex !important; }
       .viewer-zoom         { display: none !important; }
+    }
+
+    /* ─────────────────────────────────────────────────────────
+       PDF-ONLY fullscreen — #viewer-container is the target
+       ───────────────────────────────────────────────────────── */
+    #viewer-container {
+      position: relative; /* so #btn-exit-fullscreen positions against it */
+    }
+
+    #viewer-container:fullscreen,
+    #viewer-container:-webkit-full-screen,
+    #viewer-container:-moz-full-screen,
+    #viewer-container:-ms-fullscreen {
+      background: var(--clr-bg, #111118);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* Flipbook wrapper in fullscreen: no extra padding, let JS scale handle it */
+    #viewer-container:fullscreen #flipbook-wrapper,
+    #viewer-container:-webkit-full-screen #flipbook-wrapper,
+    #viewer-container:-moz-full-screen #flipbook-wrapper {
+      padding: 8px 48px;
+      flex-shrink: 1;
+      min-height: 0;
+    }
+
+    /* Arrows pinned to the bottom with auto top margin */
+    #viewer-container:fullscreen .viewer-arrows,
+    #viewer-container:-webkit-full-screen .viewer-arrows,
+    #viewer-container:-moz-full-screen .viewer-arrows {
+      flex-shrink: 0;
+      margin-top: auto;
+      padding: 12px 0 16px;
+    }
+
+    /* ── Toolbar fullscreen button ── */
+    #btn-fullscreen {
+      background: var(--clr-surface, #1e1e2e);
+      border: 1px solid var(--clr-border, #333);
+      color: var(--clr-text, #e0e0e0);
+      border-radius: var(--radius-md, 6px);
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    #btn-fullscreen:hover {
+      border-color: var(--clr-accent, #7c6af7);
+      color: var(--clr-accent, #7c6af7);
+    }
+    #btn-fullscreen svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* ── Floating "Exit Fullscreen" pill (inside #viewer-container) ──
+       Hidden normally; shown via :fullscreen selector when active.    */
+    #btn-exit-fullscreen {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 9999;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #btn-exit-fullscreen:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.4);
+      transform: scale(1.04);
+    }
+    #btn-exit-fullscreen svg { width: 14px; height: 14px; }
+
+    /* Only show when #viewer-container is the active fullscreen element */
+    #viewer-container:fullscreen          #btn-exit-fullscreen,
+    #viewer-container:-webkit-full-screen #btn-exit-fullscreen,
+    #viewer-container:-moz-full-screen    #btn-exit-fullscreen,
+    #viewer-container:-ms-fullscreen      #btn-exit-fullscreen {
+      display: inline-flex;
     }
   </style>
   <!-- Firebase SDK -->
@@ -156,17 +251,30 @@
     <a href="premium.html" class="navbar__link">★ Premium</a>
   </nav>
 
-  <div class="viewer-layout">
+  <div class="viewer-layout" id="viewer-layout">
 
     <div class="viewer-toolbar" role="toolbar" aria-label="PDF viewer controls">
       <a href="library.html" class="btn btn-ghost btn-sm" style="padding:8px 12px;flex-shrink:0">← Library</a>
       <span class="viewer-toolbar__title" id="viewer-doc-title">Loading…</span>
       <div class="viewer-toolbar__controls">
+
         <div class="viewer-zoom">
           <button class="btn btn-ghost btn-sm btn-icon" id="btn-zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
           <span id="zoom-label" style="font-size:0.82rem;color:var(--clr-text-muted);min-width:44px;text-align:center">100%</span>
-          <button class="btn btn-ghost btn-sm btn-icon" id="btn-zoom-in"  title="Zoom in"  aria-label="Zoom in">+</button>
+          <button class="btn btn-ghost btn-sm btn-icon" id="btn-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
         </div>
+
+        <!-- Expands ONLY the PDF viewer box — navbar/ads stay behind -->
+        <button id="btn-fullscreen" title="Fullscreen PDF" aria-label="Fullscreen PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+            <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+            <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+            <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+          </svg>
+          Fullscreen
+        </button>
+
       </div>
     </div>
 
@@ -195,7 +303,20 @@
         <a href="library.html" class="btn btn-primary mt-24" style="display:inline-flex">← Back to Library</a>
       </div>
 
+      <!-- ▼ Only THIS element goes fullscreen ▼ -->
       <div class="viewer-container" id="viewer-container" style="display:none">
+
+        <!-- Floating exit pill — lives inside the container so it's
+             visible above the PDF when fullscreen is active           -->
+        <button id="btn-exit-fullscreen" title="Exit fullscreen" aria-label="Exit fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3"/>
+            <path d="M21 8h-3a2 2 0 0 1-2-2V3"/>
+            <path d="M3 16h3a2 2 0 0 1 2 2v3"/>
+            <path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
+          </svg>
+          Exit Fullscreen
+        </button>
 
         <div id="flipbook-wrapper">
           <div id="flipbook-scale-wrap">
@@ -214,6 +335,8 @@
         </div>
 
       </div>
+      <!-- ▲ end fullscreen target ▲ -->
+
     </main>
 
     <div class="container" style="padding-bottom:32px">
@@ -235,23 +358,15 @@
 
   const PDF_WORKER   = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const DATA_URL     = 'assets/data/pdfs.json';
-  const SCALE_RENDER = 1.5;
+  const SCALE_RENDER = 2.0;
   const SCALE_MOBILE = 1.6;
 
-  /*
-    Zoom range that actually works without overflow:
-      ZOOM_MIN = 0.50  → displayed as  50%
-      ZOOM_MAX = 0.75  → displayed as 100%
-    The label is remapped so the user sees a friendly 50–100% scale.
-  */
-  const ZOOM_MIN     = 0.50;
-  const ZOOM_MAX     = 0.75;
-  const ZOOM_STEP    = 0.025;          // each +/- click = ~33 display-% steps
-  const ZOOM_DEFAULT = ZOOM_MAX;       // start fully zoomed-in (100% displayed)
+  const ZOOM_MIN     = 0.70;
+  const ZOOM_MAX     = 1.00;
+  const ZOOM_STEP    = 0.05;
+  const ZOOM_DEFAULT = ZOOM_MAX;
 
-  /* Map internal scale → friendly display percentage */
   function displayPct(z) {
-    // linear map: ZOOM_MIN→50, ZOOM_MAX→100
     const pct = 50 + ((z - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN)) * 50;
     return Math.round(pct) + '%';
   }
@@ -269,7 +384,7 @@
   const loadingMsg   = $('viewer-loading-msg');
   const errorEl      = $('viewer-error');
   const errorMsgEl   = $('viewer-error-msg');
-  const container    = $('viewer-container');
+  const container    = $('viewer-container');   // ← the only fullscreen target
   const flipbookEl   = $('pdf-flipbook');
   const flipWrapper  = $('flipbook-wrapper');
   const scaleWrap    = $('flipbook-scale-wrap');
@@ -282,6 +397,8 @@
   const metaInfo     = $('viewer-meta-info');
   const pageInfo     = $('viewer-page-info');
   const zoomLabel    = $('zoom-label');
+  const btnFS        = $('btn-fullscreen');
+  const btnExitFS    = $('btn-exit-fullscreen');
 
   function escapeHtml(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -294,17 +411,50 @@
   }
   function setStatus(msg) { loadingMsg.textContent = msg; }
 
+  function isFullscreen() {
+    return !!(
+      document.fullscreenElement       ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement    ||
+      document.msFullscreenElement
+    );
+  }
+
   function applyFitScale() {
     if (!spreadPixelW) return;
-    const available  = window.innerWidth - 40;
-    const baseScale  = Math.min(1, available / spreadPixelW);
-    const finalScale = baseScale * zoomScale;
+
+    // When fullscreen, the container fills 100vw; otherwise measure its real width.
+    // Subtract padding so pages have breathing room and never clip at the edges.
+    const containerW  = isFullscreen() ? window.innerWidth : (container.getBoundingClientRect().width || window.innerWidth);
+    const containerH  = isFullscreen() ? window.innerHeight : Infinity;
+    const sidePadding = isFullscreen() ? 96 : 48;
+    const available   = Math.max(containerW - sidePadding, 100);
+
+    // In fullscreen, also constrain by height so buttons stay visible
+    let baseScale = available / spreadPixelW;
+    if (isFullscreen() && spreadPixelW && scaleWrap.scrollHeight) {
+      const pageH      = scaleWrap.scrollHeight;   // natural height of flipbook
+      const maxH       = containerH - 80;           // 80px reserved for arrows/buttons
+      const scaleByH   = maxH / pageH;
+      baseScale        = Math.min(baseScale, scaleByH);
+    }
+
+    const finalScale  = baseScale * zoomScale;
 
     scaleWrap.style.transform       = `scale(${finalScale})`;
     scaleWrap.style.transformOrigin = 'top center';
 
-    const naturalH = scaleWrap.offsetHeight;
-    flipWrapper.style.height = `${Math.ceil(naturalH * finalScale) + 40}px`;
+    const naturalH = scaleWrap.scrollHeight;
+    if (isFullscreen()) {
+      // Shrink wrapper to exactly the scaled book so the arrows below it stay on screen
+      flipWrapper.style.height     = `${Math.ceil(naturalH * finalScale)}px`;
+      flipWrapper.style.flexShrink = '1';
+      flipWrapper.style.minHeight  = '0';
+    } else {
+      flipWrapper.style.height     = `${Math.ceil(naturalH * finalScale) + 40}px`;
+      flipWrapper.style.flexShrink = '';
+      flipWrapper.style.minHeight  = '';
+    }
   }
 
   function updateControls() {
@@ -335,7 +485,6 @@
   }
 
   async function renderMobilePage(num) {
-    /* Mobile always renders at a fixed scale — zoomScale is desktop-only */
     const scale = SCALE_MOBILE;
     const page  = await pdfDoc.getPage(num);
     const vp    = page.getViewport({ scale });
@@ -366,7 +515,7 @@
     flipbookEl.innerHTML = '';
 
     if (!window.St || typeof window.St.PageFlip !== 'function') {
-      showError('PageFlip library failed to initialise. Open DevTools (F12) → Console to see the error, then refresh.');
+      showError('PageFlip library failed to initialise. Open DevTools → Console for details, then refresh.');
       return;
     }
 
@@ -398,8 +547,6 @@
 
   async function initViewer() {
     pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER;
-
-    /* Show the correct starting zoom label */
     zoomLabel.textContent = displayPct(zoomScale);
 
     const id = new URLSearchParams(location.search).get('id');
@@ -482,7 +629,6 @@
 
   function applyZoom() {
     zoomLabel.textContent = displayPct(zoomScale);
-    /* zoom is desktop-only — mobile always fits to screen width */
     if (!isMobile) applyFitScale();
   }
 
@@ -498,6 +644,42 @@
     await applyZoom();
   });
 
+  /* ── Fullscreen — only #viewer-container (the PDF box) ── */
+  function enterFullscreen() {
+    const el = container;   // ← ONLY the PDF viewer div
+    if (el.requestFullscreen)       return el.requestFullscreen();
+    if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+    if (el.mozRequestFullScreen)    return el.mozRequestFullScreen();
+    if (el.msRequestFullscreen)     return el.msRequestFullscreen();
+  }
+
+  function exitFullscreen() {
+    if (document.exitFullscreen)       return document.exitFullscreen();
+    if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+    if (document.mozCancelFullScreen)  return document.mozCancelFullScreen();
+    if (document.msExitFullscreen)     return document.msExitFullscreen();
+  }
+
+  function syncFullscreenUI() {
+    const fs = isFullscreen();
+    btnFS.title = fs ? 'Exit fullscreen' : 'Fullscreen PDF';
+    btnFS.setAttribute('aria-label', fs ? 'Exit fullscreen' : 'Fullscreen PDF');
+    // Re-fit the flipbook scale for the new viewport size
+    if (!isMobile) setTimeout(applyFitScale, 150);
+  }
+
+  btnFS.addEventListener('click', () => {
+    isFullscreen() ? exitFullscreen() : enterFullscreen();
+  });
+
+  btnExitFS.addEventListener('click', () => {
+    exitFullscreen();
+  });
+
+  ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
+    .forEach(evt => document.addEventListener(evt, syncFullscreenUI));
+
+  /* ── Window resize ── */
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
@@ -528,5 +710,4 @@
   </script>
 
 </body>
-
 </html>

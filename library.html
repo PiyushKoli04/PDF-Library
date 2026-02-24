@@ -11,13 +11,63 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="assets/css/style.css" />
 
-  <!-- Google Ads: insert script here -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script> -->
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="assets/js/firebase-config.js"></script>
-<script src="assets/js/auth.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+
+  <style>
+    /* Hide desktop action buttons on mobile — burger menu handles them */
+    @media (max-width: 768px) {
+      .navbar__actions { display: none !important; }
+    }
+
+    /* Mobile nav actions block */
+    .navbar__mobile-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 16px 8px;
+      border-top: 1px solid var(--clr-border, rgba(255,255,255,0.08));
+      margin-top: 4px;
+    }
+    .navbar__mobile-actions .btn {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* Card cover: fixed height, image cropped, badge overlaid */
+    .pdf-card__cover {
+      position: relative !important;
+      height: 200px !important;
+      overflow: hidden !important;
+      flex-shrink: 0;
+    }
+    .pdf-card__cover img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center top !important;
+      display: block !important;
+    }
+    .pdf-card__badge {
+      position: absolute !important;
+      top: 10px !important;
+      left: 10px !important;
+      z-index: 2 !important;
+    }
+    .pdf-card__cover-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -40,6 +90,7 @@
         <a href="premium.html" class="navbar__link">Premium</a>
       </nav>
 
+      <!-- Desktop only -->
       <div class="navbar__actions">
         <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
         <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
@@ -51,10 +102,15 @@
     </div>
   </header>
 
+  <!-- Mobile nav — burger menu contains ALL buttons -->
   <nav class="navbar__mobile" aria-label="Mobile navigation">
     <a href="index.html"   class="navbar__link">Home</a>
     <a href="library.html" class="navbar__link active">Library</a>
-    <a href="premium.html" class="navbar__link">★ Premium</a>
+    <a href="premium.html" class="navbar__link">Premium</a>
+    <div class="navbar__mobile-actions">
+      <a href="premium.html" class="btn btn-primary btn-sm" id="mobile-nav-premium">★ Premium</a>
+      <button class="btn btn-ghost btn-sm" id="mobile-nav-logout" style="display:none">Logout</button>
+    </div>
   </nav>
 
   <main>
@@ -107,9 +163,7 @@
 
         <p class="library-results-info" id="results-info" aria-live="polite"></p>
 
-        <!-- PDF Grid -->
         <div class="pdf-grid" id="pdf-grid" role="list" aria-label="PDF document grid">
-          <!-- Populated by library.js -->
           <div class="no-results" style="grid-column:1/-1">
             <div class="no-results__icon">⏳</div>
             <p>Loading documents…</p>
@@ -197,6 +251,33 @@
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/auth.js" defer></script>
   <script src="assets/js/library.js" defer></script>
+
+  <script>
+    /* Mirror desktop #nav-logout / #nav-premium visibility into mobile menu */
+    (function () {
+      function sync() {
+        const desktopLogout  = document.getElementById('nav-logout');
+        const mobileLogout   = document.getElementById('mobile-nav-logout');
+        const desktopPremium = document.getElementById('nav-premium');
+        const mobilePremium  = document.getElementById('mobile-nav-premium');
+        if (desktopLogout && mobileLogout)
+          mobileLogout.style.display  = desktopLogout.style.display;
+        if (desktopPremium && mobilePremium)
+          mobilePremium.style.display = desktopPremium.style.display;
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        sync();
+        setTimeout(sync, 300);
+        setTimeout(sync, 1000);
+        /* Watch for auth.js toggling the desktop buttons */
+        ['nav-logout', 'nav-premium'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['style'] });
+        });
+      });
+    })();
+  </script>
 
 </body>
 </html>
