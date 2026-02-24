@@ -29,19 +29,18 @@
       .navbar__actions { display: none !important; }
     }
 
-    /* Mobile nav actions block */
-    .navbar__mobile-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 12px 16px 8px;
-      border-top: 1px solid var(--clr-border, rgba(255,255,255,0.08));
-      margin-top: 4px;
-    }
-    .navbar__mobile-actions .btn {
+    /* Reset button so it looks identical to navbar links */
+    button.navbar__link {
+      background: none;
+      border: none;
+      cursor: pointer;
       width: 100%;
-      justify-content: center;
-      text-align: center;
+      text-align: left;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      display: block;
     }
   </style>
 </head>
@@ -83,14 +82,13 @@
     </div>
   </header>
 
-  <!-- Mobile nav — burger menu contains ALL buttons -->
+  <!-- Mobile nav -->
   <nav class="navbar__mobile" aria-label="Mobile navigation">
     <a href="index.html"   class="navbar__link active">Home</a>
     <a href="library.html" class="navbar__link">Library</a>
     <a href="premium.html" class="navbar__link">★ Premium</a>
-      <a href="admin.html"   class="btn btn-ghost btn-sm"   >⚙ Admin</a>
-      <button class="btn btn-ghost btn-sm"                  >Logout</button>
-
+    <a href="admin.html"   class="navbar__link" id="mobile-nav-admin"  style="display:none">⚙ Admin</a>
+    <button               class="navbar__link" id="mobile-nav-logout" style="display:none">Logout</button>
   </nav>
 
   <main>
@@ -344,29 +342,49 @@
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/auth.js" defer></script>
 
+  <!-- Single unified sync script — DO NOT duplicate -->
   <script>
-    /* Mirror desktop button visibility into mobile burger menu */
     (function () {
+      var PAIRS = [
+        ['nav-admin',  'mobile-nav-admin'],
+        ['nav-logout', 'mobile-nav-logout'],
+      ];
+
       function sync() {
-        [
-          ['nav-admin',   'mobile-nav-admin'],
-          ['nav-premium', 'mobile-nav-premium'],
-          ['nav-logout',  'mobile-nav-logout'],
-        ].forEach(function(pair) {
+        PAIRS.forEach(function (pair) {
           var desktop = document.getElementById(pair[0]);
           var mobile  = document.getElementById(pair[1]);
-          if (desktop && mobile) mobile.style.display = desktop.style.display;
+          if (desktop && mobile) {
+            mobile.style.display = desktop.style.display;
+          }
         });
       }
 
       window.addEventListener('DOMContentLoaded', function () {
+        // Run sync at increasing delays to catch late auth.js updates
         sync();
         setTimeout(sync, 300);
-        setTimeout(sync, 1000);
-        /* Watch auth.js toggling desktop buttons and mirror instantly */
-        ['nav-admin', 'nav-premium', 'nav-logout'].forEach(function(id) {
-          var el = document.getElementById(id);
-          if (el) new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['style'] });
+        setTimeout(sync, 800);
+        setTimeout(sync, 2000);
+
+        // Wire mobile logout → desktop logout (auth.js listener lives there)
+        var mobileLogout  = document.getElementById('mobile-nav-logout');
+        var desktopLogout = document.getElementById('nav-logout');
+        if (mobileLogout && desktopLogout) {
+          mobileLogout.addEventListener('click', function () {
+            desktopLogout.click();
+          });
+        }
+
+        // Watch desktop elements for style changes and mirror immediately
+        PAIRS.forEach(function (pair) {
+          var desktop = document.getElementById(pair[0]);
+          if (desktop) {
+            new MutationObserver(sync).observe(desktop, {
+              attributes: true,
+              attributeFilter: ['style']
+            });
+          }
         });
       });
     })();
