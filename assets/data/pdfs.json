@@ -18,15 +18,15 @@
   "pendingUsers": [],
   "public_pdfs": [
     {
-      "id": "data-structures",
-      "title": "Data Structures & Algorithms",
-      "description": "Complete coverage of arrays, linked lists, trees, graphs, sorting and searching algorithms with worked examples.",
-      "category": "Computer Science",
-      "pages": 124,
-      "size": "3.2 MB",
+      "id": "MDM-FTS-notes",
+      "title": "MDM - Fundamentals of Telecommunication Systems : Module 1",
+      "description": "Complete coverage of telecommunication systems, including signal processing, modulation techniques, network protocols, and emerging technologies.",
+      "category": "Artificial Intelligence & Data Science",
+      "pages": 14,
+      "size": "1 MB",
       "thumbnail": "assets/images/ct.png",
-      "file": "assets/pdfs/mod3.pdf",
-      "featured": true
+      "file": "assets/pdfs/fts_mod_1.pdf",
+      "featured": false
     },
     {
       "id": "calculus-notes",
@@ -47,61 +47,6 @@
       "pages": 110,
       "size": "3.5 MB",
       "thumbnail": "assets/images/thumb-physics.jpg",
-      "file": "assets/pdfs/sample.pdf",
-      "featured": false
-    },
-    {
-      "id": "organic-chemistry",
-      "title": "Organic Chemistry Fundamentals",
-      "description": "Functional groups, reaction mechanisms, stereochemistry, and synthesis strategies for undergraduate students.",
-      "category": "Chemistry",
-      "pages": 145,
-      "size": "4.1 MB",
-      "thumbnail": "assets/images/thumb-chem.jpg",
-      "file": "assets/pdfs/sample.pdf",
-      "featured": false
-    },
-    {
-      "id": "world-history",
-      "title": "World History: Modern Era",
-      "description": "Key events from the Industrial Revolution through the 21st century. Timelines, maps, and critical analysis.",
-      "category": "History",
-      "pages": 200,
-      "size": "5.0 MB",
-      "thumbnail": "assets/images/thumb-history.jpg",
-      "file": "assets/pdfs/sample.pdf",
-      "featured": false
-    },
-    {
-      "id": "english-grammar",
-      "title": "Advanced English Grammar",
-      "description": "Grammar rules, syntax, punctuation, and writing style guide for academic and professional communication.",
-      "category": "Language",
-      "pages": 88,
-      "size": "2.1 MB",
-      "thumbnail": "assets/images/thumb-lang.jpg",
-      "file": "assets/pdfs/sample.pdf",
-      "featured": true
-    },
-    {
-      "id": "linear-algebra",
-      "title": "Linear Algebra Essentials",
-      "description": "Vectors, matrices, determinants, eigenvalues, and linear transformations with visual explanations.",
-      "category": "Mathematics",
-      "pages": 112,
-      "size": "3.0 MB",
-      "thumbnail": "assets/images/thumb-math.jpg",
-      "file": "assets/pdfs/sample.pdf",
-      "featured": false
-    },
-    {
-      "id": "networking-basics",
-      "title": "Computer Networks",
-      "description": "OSI model, TCP/IP, routing, switching, protocols, and network security fundamentals explained clearly.",
-      "category": "Computer Science",
-      "pages": 130,
-      "size": "3.8 MB",
-      "thumbnail": "assets/images/thumb-cs.jpg",
       "file": "assets/pdfs/sample.pdf",
       "featured": false
     }
