@@ -18,38 +18,61 @@
   "pendingUsers": [],
   "public_pdfs": [
     {
-      "id": "MDM-FTS-notes",
-      "title": "MDM - Fundamentals of Telecommunication Systems : Module 1",
+      "id": "MDM-FTS-notes-1",
+      "title": "Module 1 : MDM - Fundamentals of Telecommunication Systems : ",
       "description": "Complete coverage of telecommunication systems, including signal processing, modulation techniques, network protocols, and emerging technologies.",
       "category": "Artificial Intelligence & Data Science",
       "pages": 14,
       "size": "1 MB",
-      "thumbnail": "assets/images/ct.png",
+      "thumbnail": "assets/images/mdm.png",
       "file": "assets/pdfs/fts_mod_1.pdf",
       "featured": false
     },
     {
-      "id": "calculus-notes",
-      "title": "Calculus: Differential & Integral",
-      "description": "Comprehensive calculus notes from limits and derivatives through integration techniques and series expansions.",
-      "category": "Mathematics",
-      "pages": 98,
-      "size": "2.8 MB",
-      "thumbnail": "assets/images/thumb-math.jpg",
-      "file": "assets/pdfs/mod3.pdf",
-      "featured": true
+      "id": "MDM-FTS-notes-2",
+      "title": "Module 2 : MDM - Fundamentals of Telecommunication Systems",
+      "description": "Digital and analog communication, error correction, wireless technologies, and the future of telecommunications in a comprehensive guide.",
+      "category": "Artificial Intelligence & Data Science",
+      "pages": 28,
+      "size": "3 MB",
+      "thumbnail": "assets/images/mdm.png",
+      "file": "assets/pdfs/fts_mod_2.pdf",
+      "featured": false
     },
     {
-      "id": "physics-mechanics",
-      "title": "Classical Mechanics",
-      "description": "Newton's laws, kinematics, dynamics, energy, momentum, rotational motion, and oscillations thoroughly explained.",
-      "category": "Physics",
-      "pages": 110,
-      "size": "3.5 MB",
-      "thumbnail": "assets/images/thumb-physics.jpg",
-      "file": "assets/pdfs/sample.pdf",
+      "id": "MDM-FTS-notes-3",
+      "title": "Module 3 : MDM - Fundamentals of Telecommunication Systems",
+      "description": "Cellular networks, satellite communication, network security, and the impact of 5G and beyond on global connectivity.",
+      "category": "Artificial Intelligence & Data Science",
+      "pages": 34,
+      "size": "4 MB",
+      "thumbnail": "assets/images/mdm.png",
+      "file": "assets/pdfs/fts_mod_3.pdf",
+      "featured": false
+    },
+    {
+      "id": "CT-notes-2",
+      "title": "Module 2 : Computational Theory",
+      "description": "Automata theory, formal languages, Turing machines, decidability, and complexity classes for a comprehensive understanding of computation.",
+      "category": "Artificial Intelligence & Data Science",
+      "pages": 15,
+      "size": "4 MB",
+      "thumbnail": "assets/images/ct.png",
+      "file": "assets/pdfs/ct_mod2.pdf",
+      "featured": false
+    },
+    {
+      "id": "CT-notes-3",
+      "title": "Module 3 : Computational Theory",
+      "description": "Advanced topics in computational theory, including NP-completeness, approximation algorithms, and the latest research in computational complexity.",
+      "category": "Artificial Intelligence & Data Science",
+      "pages": 18,
+      "size": "4 MB",
+      "thumbnail": "assets/images/ct.png",
+      "file": "assets/pdfs/ct_mod3.pdf",
       "featured": false
     }
+  
   ],
   "premium_pdfs": [
     {

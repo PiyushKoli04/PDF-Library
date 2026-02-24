@@ -41,19 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ── Build card HTML ──
-     Uses window.PDFLib.buildPdfCard from main.js if available.
-     If that function exists it already handles the full card markup,
-     so we just fix images afterwards via fixCardImages().
-     Otherwise we render our own card.                               */
+     Always uses our own markup so the thumbnail field from pdfs.json
+     is always read correctly. We do NOT delegate to window.PDFLib.buildPdfCard
+     because that function is unaware of the thumbnail field and causes
+     images to be missing or wrong.                                    */
   function buildCard(pdf) {
-    if (window.PDFLib && typeof window.PDFLib.buildPdfCard === 'function') {
-      return window.PDFLib.buildPdfCard(pdf, isPremiumPage);
-    }
-    return buildCardFallback(pdf);
-  }
-
-  function buildCardFallback(pdf) {
     const href  = `viewer.html?id=${encodeURIComponent(pdf.id)}`;
+
+    // Read thumbnail from every possible field name in pdfs.json
     const thumb = pdf.thumbnail || pdf.cover || pdf.image || pdf.thumb || '';
 
     const badge = isPremiumPage
@@ -91,34 +86,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       </article>`;
   }
 
-  /* After rendering cards built by window.PDFLib.buildPdfCard,
-     ensure every img inside .pdf-card__cover uses the thumbnail
-     from JSON (the original buildPdfCard may not set src correctly) */
-  function fixCardImages() {
-    if (!window.PDFLib || typeof window.PDFLib.buildPdfCard !== 'function') return;
-    gridEl.querySelectorAll('.pdf-card').forEach((card, i) => {
-      const pdf   = allPdfs[i];
-      if (!pdf) return;
-      const thumb = pdf.thumbnail || pdf.cover || pdf.image || pdf.thumb || '';
-      if (!thumb) return;
-      const img = card.querySelector('.pdf-card__cover img, .pdf-card__cover-img');
-      if (img && !img.src.includes(thumb.replace(/^assets\//, ''))) {
-        img.src = thumb;
-      } else if (!img) {
-        // No img at all — inject one
-        const cover = card.querySelector('.pdf-card__cover');
-        if (cover) {
-          const el = document.createElement('img');
-          el.src     = thumb;
-          el.alt     = pdf.title || '';
-          el.loading = 'lazy';
-          el.onerror = function () { this.style.display = 'none'; };
-          cover.insertBefore(el, cover.firstChild);
-        }
-      }
-    });
-  }
-
   /* ── Render grid ── */
   function renderGrid(list) {
     if (list.length === 0) {
@@ -129,7 +96,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>`;
     } else {
       gridEl.innerHTML = list.map(buildCard).join('');
-      fixCardImages();
     }
     if (resultsInfo) {
       resultsInfo.textContent = `Showing ${list.length} of ${allPdfs.length} documents`;
@@ -138,8 +104,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   /* ── Filters ── */
   function applyFilters() {
-    const query = (searchInput    ? searchInput.value.trim().toLowerCase()  : '');
-    const cat   = (categoryFilter ? categoryFilter.value                    : '');
+    const query = (searchInput    ? searchInput.value.trim().toLowerCase() : '');
+    const cat   = (categoryFilter ? categoryFilter.value                   : '');
     const filtered = allPdfs.filter(pdf => {
       const matchQ = !query
         || (pdf.title       || '').toLowerCase().includes(query)

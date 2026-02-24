@@ -19,8 +19,8 @@
       justify-content: center;
       align-items: flex-start;
       width: 100%;
-      overflow: visible;        /* was hidden — caused lateral edge clipping */
-      padding: 20px 24px;       /* generous sides so page shadows never clip */
+      overflow: visible;
+      padding: 20px 24px;
       box-sizing: border-box;
     }
 
@@ -71,17 +71,25 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
       width: 100%;
-      padding: 20px 16px;
+      padding: 16px 0 24px;
       box-sizing: border-box;
+      overflow-y: auto;
+      /* Allow natural document scroll on mobile */
     }
 
     #single-page-wrapper canvas {
-      max-width: 100%;
+      width: 100%;
       height: auto;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-lg);
+      display: block;
+      border-radius: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+    }
+
+    /* Hide prev/next nav buttons on mobile — user scrolls instead */
+    @media (max-width: 640px) {
+      .viewer-arrows { display: none !important; }
     }
 
     .viewer-zoom {
@@ -117,7 +125,7 @@
        PDF-ONLY fullscreen — #viewer-container is the target
        ───────────────────────────────────────────────────────── */
     #viewer-container {
-      position: relative; /* so #btn-exit-fullscreen positions against it */
+      position: relative;
     }
 
     #viewer-container:fullscreen,
@@ -128,28 +136,37 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       overflow: hidden;
       width: 100vw;
       height: 100vh;
     }
 
-    /* Flipbook wrapper in fullscreen: no extra padding, let JS scale handle it */
     #viewer-container:fullscreen #flipbook-wrapper,
     #viewer-container:-webkit-full-screen #flipbook-wrapper,
     #viewer-container:-moz-full-screen #flipbook-wrapper {
       padding: 8px 48px;
-      flex-shrink: 1;
-      min-height: 0;
+      flex: 0 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* Arrows pinned to the bottom with auto top margin */
+    #viewer-container:fullscreen #flipbook-scale-wrap,
+    #viewer-container:-webkit-full-screen #flipbook-scale-wrap,
+    #viewer-container:-moz-full-screen #flipbook-scale-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     #viewer-container:fullscreen .viewer-arrows,
     #viewer-container:-webkit-full-screen .viewer-arrows,
     #viewer-container:-moz-full-screen .viewer-arrows {
       flex-shrink: 0;
-      margin-top: auto;
-      padding: 12px 0 16px;
+      margin-top: 16px;
+      padding: 0 0 16px;
     }
 
     /* ── Toolbar fullscreen button ── */
@@ -175,8 +192,6 @@
     }
     #btn-fullscreen svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-    /* ── Floating "Exit Fullscreen" pill (inside #viewer-container) ──
-       Hidden normally; shown via :fullscreen selector when active.    */
     #btn-exit-fullscreen {
       display: none;
       position: absolute;
@@ -205,7 +220,6 @@
     }
     #btn-exit-fullscreen svg { width: 14px; height: 14px; }
 
-    /* Only show when #viewer-container is the active fullscreen element */
     #viewer-container:fullscreen          #btn-exit-fullscreen,
     #viewer-container:-webkit-full-screen #btn-exit-fullscreen,
     #viewer-container:-moz-full-screen    #btn-exit-fullscreen,
@@ -264,7 +278,6 @@
           <button class="btn btn-ghost btn-sm btn-icon" id="btn-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
         </div>
 
-        <!-- Expands ONLY the PDF viewer box — navbar/ads stay behind -->
         <button id="btn-fullscreen" title="Fullscreen PDF" aria-label="Fullscreen PDF">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
@@ -306,8 +319,6 @@
       <!-- ▼ Only THIS element goes fullscreen ▼ -->
       <div class="viewer-container" id="viewer-container" style="display:none">
 
-        <!-- Floating exit pill — lives inside the container so it's
-             visible above the PDF when fullscreen is active           -->
         <button id="btn-exit-fullscreen" title="Exit fullscreen" aria-label="Exit fullscreen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 3v3a2 2 0 0 1-2 2H3"/>
@@ -325,7 +336,7 @@
         </div>
 
         <div id="single-page-wrapper" aria-label="Single page PDF viewer">
-          <canvas id="single-page-canvas"></canvas>
+          <!-- pages rendered here dynamically as stacked canvases -->
         </div>
 
         <div class="viewer-arrows" role="group" aria-label="Page navigation">
@@ -377,19 +388,19 @@
   let totalPages   = 0;
   let zoomScale    = ZOOM_DEFAULT;
   let isMobile     = window.innerWidth <= 640;
-  let spreadPixelW = 0;
+  let singlePagePixelW = 0; // ← now tracks single-page width (not spread)
+  let singlePagePixelH = 0; // ← tracks single-page height for fullscreen scaling
 
   const $            = id => document.getElementById(id);
   const loadingEl    = $('viewer-loading');
   const loadingMsg   = $('viewer-loading-msg');
   const errorEl      = $('viewer-error');
   const errorMsgEl   = $('viewer-error-msg');
-  const container    = $('viewer-container');   // ← the only fullscreen target
+  const container    = $('viewer-container');
   const flipbookEl   = $('pdf-flipbook');
   const flipWrapper  = $('flipbook-wrapper');
   const scaleWrap    = $('flipbook-scale-wrap');
   const singleWrap   = $('single-page-wrapper');
-  const singleCanvas = $('single-page-canvas');
   const btnPrev      = $('btn-prev');
   const btnNext      = $('btn-next');
   const pageCounter  = $('page-counter');
@@ -421,54 +432,53 @@
   }
 
   function applyFitScale() {
-    if (!spreadPixelW) return;
+    if (!singlePagePixelW) return;
 
-    // When fullscreen, the container fills 100vw; otherwise measure its real width.
-    // Subtract padding so pages have breathing room and never clip at the edges.
-    const containerW  = isFullscreen() ? window.innerWidth : (container.getBoundingClientRect().width || window.innerWidth);
-    const containerH  = isFullscreen() ? window.innerHeight : Infinity;
-    const sidePadding = isFullscreen() ? 96 : 48;
+    const fs          = isFullscreen();
+    const containerW  = fs ? window.innerWidth  : (container.getBoundingClientRect().width || window.innerWidth);
+    const containerH  = fs ? window.innerHeight : Infinity;
+    const sidePadding = fs ? 96 : 48;
     const available   = Math.max(containerW - sidePadding, 100);
 
-    // In fullscreen, also constrain by height so buttons stay visible
-    let baseScale = available / spreadPixelW;
-    if (isFullscreen() && spreadPixelW && scaleWrap.scrollHeight) {
-      const pageH      = scaleWrap.scrollHeight;   // natural height of flipbook
-      const maxH       = containerH - 80;           // 80px reserved for arrows/buttons
-      const scaleByH   = maxH / pageH;
-      baseScale        = Math.min(baseScale, scaleByH);
+    // Scale to fit width first (single page width, not spread)
+    let baseScale = available / singlePagePixelW;
+
+    if (fs && singlePagePixelH) {
+      // Also constrain by height — reserve ~60px for the nav buttons below
+      const BUTTONS_H = 60;
+      const maxH      = containerH - BUTTONS_H;
+      const scaleByH  = maxH / singlePagePixelH;
+      baseScale       = Math.min(baseScale, scaleByH);
     }
 
-    const finalScale  = baseScale * zoomScale;
+    const finalScale = baseScale * zoomScale;
 
     scaleWrap.style.transform       = `scale(${finalScale})`;
     scaleWrap.style.transformOrigin = 'top center';
 
-    const naturalH = scaleWrap.scrollHeight;
-    if (isFullscreen()) {
-      // Shrink wrapper to exactly the scaled book so the arrows below it stay on screen
-      flipWrapper.style.height     = `${Math.ceil(naturalH * finalScale)}px`;
-      flipWrapper.style.flexShrink = '1';
-      flipWrapper.style.minHeight  = '0';
+    if (fs) {
+      // In fullscreen: set wrapper height to scaled content height so flexbox centres it correctly
+      const scaledH = Math.ceil(singlePagePixelH * finalScale);
+      flipWrapper.style.height     = `${scaledH}px`;
+      flipWrapper.style.flexShrink = '';
+      flipWrapper.style.minHeight  = '';
     } else {
-      flipWrapper.style.height     = `${Math.ceil(naturalH * finalScale) + 40}px`;
+      flipWrapper.style.height     = `${Math.ceil(singlePagePixelH * finalScale) + 40}px`;
       flipWrapper.style.flexShrink = '';
       flipWrapper.style.minHeight  = '';
     }
   }
 
   function updateControls() {
+    // Always single-page tracking now (pageFlip in portrait/single mode still increments per page)
+    const idx = pageFlip ? pageFlip.getCurrentPageIndex() : currentPage - 1;
+    pageCounter.textContent = `Page ${idx + 1} of ${totalPages}`;
+    pageInfo.textContent    = `Page ${idx + 1} of ${totalPages}`;
+
     if (isMobile) {
-      pageCounter.textContent = `Page ${currentPage} of ${totalPages}`;
-      pageInfo.textContent    = `Page ${currentPage} of ${totalPages}`;
       btnPrev.disabled = currentPage <= 1;
       btnNext.disabled = currentPage >= totalPages;
     } else {
-      const idx    = pageFlip ? pageFlip.getCurrentPageIndex() : 0;
-      const spread = Math.floor(idx / 2) + 1;
-      const total  = Math.ceil(totalPages / 2);
-      pageCounter.textContent = `Spread ${spread} of ${total}`;
-      pageInfo.textContent    = `Page ${idx + 1} of ${totalPages}`;
       btnPrev.disabled = idx <= 0;
       btnNext.disabled = idx >= totalPages - 1;
     }
@@ -484,15 +494,45 @@
     return c;
   }
 
-  async function renderMobilePage(num) {
-    const scale = SCALE_MOBILE;
-    const page  = await pdfDoc.getPage(num);
-    const vp    = page.getViewport({ scale });
-    singleCanvas.width  = Math.floor(vp.width);
-    singleCanvas.height = Math.floor(vp.height);
-    const ctx = singleCanvas.getContext('2d');
-    ctx.clearRect(0, 0, singleCanvas.width, singleCanvas.height);
-    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+  // Mobile: render all pages stacked vertically, one canvas per page
+  async function renderAllMobilePages() {
+    singleWrap.innerHTML = '';           // clear any previous canvases
+    const viewportW = window.innerWidth; // full screen width
+    for (let i = 1; i <= totalPages; i++) {
+      setStatus(`Rendering page ${i} of ${totalPages}…`);
+      const page = await pdfDoc.getPage(i);
+      // Scale so the page fills the full viewport width
+      const baseVP  = page.getViewport({ scale: 1 });
+      const scale   = viewportW / baseVP.width;
+      const vp      = page.getViewport({ scale });
+      const c       = document.createElement('canvas');
+      c.width       = Math.floor(vp.width);
+      c.height      = Math.floor(vp.height);
+      c.dataset.page = i;
+      await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+      singleWrap.appendChild(c);
+    }
+    // Observe which page is in view to update counter
+    setupMobileScrollObserver();
+  }
+
+  function setupMobileScrollObserver() {
+    if (window._mobilePageObserver) window._mobilePageObserver.disconnect();
+    const canvases = singleWrap.querySelectorAll('canvas');
+    const observer = new IntersectionObserver(entries => {
+      let best = null, bestRatio = 0;
+      entries.forEach(e => { if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; } });
+      // Also scan all canvases if no entry is dominant
+      if (!best) return;
+      const pg = parseInt(best.dataset.page, 10);
+      if (!isNaN(pg)) {
+        currentPage = pg;
+        pageCounter.textContent = `Page ${currentPage} of ${totalPages}`;
+        pageInfo.textContent    = `Page ${currentPage} of ${totalPages}`;
+      }
+    }, { root: null, threshold: Array.from({length:11}, (_,i) => i/10) });
+    canvases.forEach(c => observer.observe(c));
+    window._mobilePageObserver = observer;
   }
 
   async function buildFlipbook() {
@@ -506,7 +546,10 @@
     const vp1 = (await pdfDoc.getPage(1)).getViewport({ scale: SCALE_RENDER });
     const PW  = Math.floor(vp1.width);
     const PH  = Math.floor(vp1.height);
-    spreadPixelW = PW * 2;
+
+    // ── CHANGED: track single-page dimensions (not spread) ──
+    singlePagePixelW = PW;
+    singlePagePixelH = PH;
 
     if (pageFlip) {
       try { pageFlip.destroy(); } catch (_) {}
@@ -525,7 +568,7 @@
       size:                'fixed',
       drawShadow:          true,
       flippingTime:        600,
-      usePortrait:         false,
+      usePortrait:         true,   // ← CHANGED: single-page mode (one page at a time)
       startZIndex:         1,
       autoSize:            false,
       maxShadowOpacity:    0.5,
@@ -599,8 +642,8 @@
     if (isMobile) {
       flipWrapper.style.display  = 'none';
       singleWrap.style.display   = 'flex';
+      await renderAllMobilePages();
       loadingEl.style.display    = 'none';
-      await renderMobilePage(1);
     } else {
       singleWrap.style.display  = 'none';
       flipWrapper.style.display = 'flex';
@@ -613,7 +656,9 @@
 
   btnPrev.addEventListener('click', async () => {
     if (isMobile) {
-      if (currentPage > 1) { currentPage--; await renderMobilePage(currentPage); updateControls(); }
+      // Mobile uses scroll — buttons are hidden, but just in case: scroll to prev page canvas
+      const c = singleWrap.querySelector(`canvas[data-page="${currentPage - 1}"]`);
+      if (c) c.scrollIntoView({ behavior: 'smooth' });
     } else {
       if (pageFlip) pageFlip.flipPrev();
     }
@@ -621,7 +666,9 @@
 
   btnNext.addEventListener('click', async () => {
     if (isMobile) {
-      if (currentPage < totalPages) { currentPage++; await renderMobilePage(currentPage); updateControls(); }
+      // Mobile uses scroll — buttons are hidden, but just in case: scroll to next page canvas
+      const c = singleWrap.querySelector(`canvas[data-page="${currentPage + 1}"]`);
+      if (c) c.scrollIntoView({ behavior: 'smooth' });
     } else {
       if (pageFlip) pageFlip.flipNext();
     }
@@ -644,9 +691,9 @@
     await applyZoom();
   });
 
-  /* ── Fullscreen — only #viewer-container (the PDF box) ── */
+  /* ── Fullscreen ── */
   function enterFullscreen() {
-    const el = container;   // ← ONLY the PDF viewer div
+    const el = container;
     if (el.requestFullscreen)       return el.requestFullscreen();
     if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
     if (el.mozRequestFullScreen)    return el.mozRequestFullScreen();
@@ -664,7 +711,6 @@
     const fs = isFullscreen();
     btnFS.title = fs ? 'Exit fullscreen' : 'Fullscreen PDF';
     btnFS.setAttribute('aria-label', fs ? 'Exit fullscreen' : 'Fullscreen PDF');
-    // Re-fit the flipbook scale for the new viewport size
     if (!isMobile) setTimeout(applyFitScale, 150);
   }
 
@@ -694,7 +740,9 @@
       if (isMobile) {
         flipWrapper.style.display  = 'none';
         singleWrap.style.display   = 'flex';
-        await renderMobilePage(currentPage);
+        loadingEl.style.display    = 'flex';
+        await renderAllMobilePages();
+        loadingEl.style.display    = 'none';
       } else {
         singleWrap.style.display  = 'none';
         flipWrapper.style.display = 'flex';
