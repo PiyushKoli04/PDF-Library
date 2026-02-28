@@ -1,53 +1,73 @@
-# PDFLibrary — Static Digital Library Platform
+# 📚 PDFLibrary — Your Digital Reading Space
 
-A production-ready static PDF library website. No server required.
+Welcome to **PDFLibrary**, a clean and simple digital platform where you can explore, preview, and read PDF books directly in your browser.
 
-## 🚀 Quick Start
+No downloads. No complex setup. Just open and read.
 
-1. Upload all files to any static host (GitHub Pages, Netlify, Vercel)
-2. Open `index.html` in your browser
+---
 
-## 📁 Structure
+## 🌐 How It Works
 
-```
-/
-├── index.html         — Landing page
-├── library.html       — Public PDF listing
-├── viewer.html        — PDF flipbook viewer
-├── premium.html       — Premium gated library
-├── assets/
-│   ├── css/style.css  — All styles
-│   ├── js/
-│   │   ├── main.js    — Shared utilities + nav
-│   │   ├── auth.js    — Static auth system
-│   │   └── library.js — Dynamic PDF grid
-│   ├── data/
-│   │   └── pdfs.json  — All content + user credentials
-│   ├── images/        — PDF thumbnails (add your own)
-│   └── pdfs/          — PDF files (add your own)
-```
+### 1️⃣ Browse the Library
+Visit the Library page to explore available PDFs.  
+Books are neatly displayed with covers and categories for easy browsing.
 
-## 🔑 Demo Credentials (Premium Login)
+### 2️⃣ Open & Read
+Click on any book to open it in the interactive viewer.  
+You can:
+- Flip pages like a real book
+- Navigate using controls
+- Read in a distraction-free interface
 
-| Username | Password    |
-|----------|-------------|
-| admin    | admin123    |
-| student  | student123  |
+### 3️⃣ Premium Access (If Enabled)
+Some books may be marked as **Premium**.  
+To access them:
+- Go to the Premium section
+- Log in with provided credentials
+- Unlock exclusive content
 
-## 📄 Adding Your Own PDFs
+---
 
-1. Add PDF files to `assets/pdfs/`
-2. Add thumbnail images to `assets/images/`
-3. Edit `assets/data/pdfs.json` — add entries to `public_pdfs` or `premium_pdfs`
+## ✨ Features
 
-## 🎨 Customization
+- 📖 Interactive flipbook reading experience  
+- 📂 Organized public and premium sections  
+- 🎨 Clean, modern interface  
+- 📱 Works on desktop and mobile  
+- ⚡ Fast loading — no installation required  
 
-- Colors: Edit CSS variables in `assets/css/style.css` (`:root` block)
-- Fonts: Change Google Fonts import at top of `style.css`
-- Credentials: Edit `users` array in `assets/data/pdfs.json`
+---
 
-## 📦 Dependencies (CDN)
+## 📚 Content Categories
 
-- **PDF.js** 3.11.174 — PDF rendering
-- **PageFlip.js** 2.0.7 — Book flip animation
-- **Google Fonts** — Playfair Display + DM Sans
+Books may include:
+- Academic materials  
+- Technical documents  
+- Study resources  
+- Reference PDFs  
+- Curated collections  
+
+---
+
+## 🔐 Access Information
+
+- Public books are freely accessible.
+- Premium books require login access (if enabled by the administrator).
+
+If you don’t have login details, please contact the platform administrator.
+
+---
+
+## 💡 Tips for Best Experience
+
+- Use a larger screen for comfortable reading.
+- Ensure a stable internet connection.
+- Allow pop-ups if your browser blocks the viewer.
+
+---
+
+## 📌 Need Help?
+
+If you face any issues while browsing or reading, please contact the administrator of this library.
+
+Happy Reading 📖✨
