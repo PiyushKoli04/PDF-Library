@@ -1,475 +1,1353 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Privacy Policy for Syntax Archives — How we collect, use, and protect your information." />
-  <meta name="theme-color" content="#0d0f14" />
-  <title>Privacy Policy — Syntax Archives</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Privacy Policy for Syntax Archives — How we collect, use, and protect your information."
+    />
+    <meta name="theme-color" content="#0d0f14" />
+    <title>Privacy Policy — Syntax Archives</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="assets/js/firebase-config.js"></script>
-  <script src="assets/js/auth.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/auth.js" defer></script>
 
-  <style>
-    @media (max-width: 768px) { .navbar__actions { display: none !important; } }
-    button.navbar__link {
-      background: none; border: none; cursor: pointer;
-      width: 100%; text-align: left; padding: 0; margin: 0;
-      font: inherit; color: inherit; display: block;
-    }
+    <style>
+      /* ══════════════════════════════════════════
+         CRITICAL MOBILE OVERFLOW FIXES
+         These override anything in style.css that
+         causes horizontal scroll on mobile.
+      ══════════════════════════════════════════ */
 
-    .page-hero {
-      padding: 120px 0 64px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .page-hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,141,238,0.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .page-hero__eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--clr-accent-2);
-      background: rgba(91,141,238,0.08);
-      border: 1px solid rgba(91,141,238,0.2);
-      padding: 6px 16px;
-      border-radius: 100px;
-      margin-bottom: 24px;
-    }
-    .page-hero__title {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 700;
-      color: var(--clr-text);
-      margin-bottom: 20px;
-    }
-    .page-hero__subtitle {
-      font-size: 1rem;
-      color: var(--clr-text-muted);
-      max-width: 540px;
-      margin: 0 auto;
-    }
-    .page-hero__meta {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 20px;
-      font-size: 0.82rem;
-      color: var(--clr-text-faint);
-    }
-
-    .legal-layout {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 48px;
-      padding: 60px 0 80px;
-      align-items: start;
-    }
-    @media (max-width: 900px) { .legal-layout { grid-template-columns: 1fr; } }
-
-    .toc {
-      position: sticky;
-      top: 88px;
-      background: var(--clr-surface);
-      border: 1px solid var(--clr-border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-    }
-    @media (max-width: 900px) { .toc { position: static; } }
-    .toc__title {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--clr-accent-2);
-      margin-bottom: 16px;
-    }
-    .toc__list { display: flex; flex-direction: column; gap: 4px; }
-    .toc__link {
-      font-size: 0.85rem;
-      color: var(--clr-text-muted);
-      padding: 7px 12px;
-      border-radius: var(--radius-sm);
-      transition: background var(--t-fast), color var(--t-fast);
-      display: block;
-    }
-    .toc__link:hover { background: var(--clr-surface-2); color: var(--clr-accent-2); }
-
-    .legal-content { max-width: 780px; }
-    .legal-section { margin-bottom: 48px; }
-    .legal-section__num {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--clr-accent-2);
-      margin-bottom: 10px;
-    }
-    .legal-section__title {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      font-weight: 600;
-      color: var(--clr-text);
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--clr-border);
-    }
-    .legal-section p {
-      color: var(--clr-text-muted);
-      line-height: 1.8;
-      margin-bottom: 14px;
-      font-size: 0.95rem;
-    }
-    .legal-section ul {
-      list-style: none; margin: 0 0 14px; padding: 0;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .legal-section ul li {
-      display: flex; gap: 12px;
-      color: var(--clr-text-muted);
-      font-size: 0.95rem; line-height: 1.7;
-    }
-    .legal-section ul li::before {
-      content: '›'; color: var(--clr-accent-2);
-      font-weight: 700; flex-shrink: 0; margin-top: 1px;
-    }
-    .legal-section strong { color: var(--clr-text); }
-
-    .notice-box {
-      background: rgba(91,141,238,0.06);
-      border: 1px solid rgba(91,141,238,0.2);
-      border-radius: var(--radius-md);
-      padding: 20px 24px;
-      margin-bottom: 14px;
-      display: flex; gap: 14px; align-items: flex-start;
-    }
-    .notice-box__icon { color: var(--clr-accent-2); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
-    .notice-box p { margin: 0; font-size: 0.9rem; color: var(--clr-text-muted); }
-
-    /* Data Table */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 16px;
-      font-size: 0.9rem;
-    }
-    .data-table th {
-      background: var(--clr-surface-2);
-      color: var(--clr-text);
-      font-weight: 600;
-      padding: 12px 16px;
-      text-align: left;
-      border: 1px solid var(--clr-border);
-    }
-    .data-table td {
-      padding: 12px 16px;
-      border: 1px solid var(--clr-border);
-      color: var(--clr-text-muted);
-      vertical-align: top;
-    }
-    .data-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-  </style>
-</head>
-<body>
-
-  <!-- ── Navigation ── -->
-  <header class="navbar" role="banner">
-    <div class="container navbar__inner">
-      <a href="index.html" class="navbar__logo" aria-label="PDF Library home">
-        <div class="navbar__logo-icon" aria-hidden="true">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
-          </svg>
-        </div>
-        Syntax Archives
-      </a>
-      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
-        <a href="index.html"   class="navbar__link">Home</a>
-        <a href="library.html" class="navbar__link">Library</a>
-        <a href="premium.html" class="navbar__link">Premium</a>
-      </nav>
-      <div class="navbar__actions">
-        <a href="library.html" class="btn btn-outline btn-sm">Browse</a>
-        <a href="admin.html"   class="btn btn-ghost btn-sm"   id="nav-admin"   style="display:none">⚙ Admin</a>
-        <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
-        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
-      </div>
-      <button class="navbar__burger" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </header>
-
-  <nav class="navbar__mobile" aria-label="Mobile navigation">
-    <a href="index.html"   class="navbar__link">Home</a>
-    <a href="library.html" class="navbar__link">Library</a>
-    <a href="premium.html" class="navbar__link">★ Premium</a>
-    <a href="admin.html"   class="navbar__link" id="mobile-nav-admin"  style="display:none">⚙ Admin</a>
-    <button               class="navbar__link" id="mobile-nav-logout" style="display:none">Logout</button>
-  </nav>
-
-  <main>
-    <section class="page-hero">
-      <div class="container">
-        <div class="page-hero__eyebrow"><i class="bi bi-shield-lock"></i> Privacy</div>
-        <h1 class="page-hero__title">Privacy Policy</h1>
-        <p class="page-hero__subtitle">Your privacy matters to us. This policy explains what information we collect, how we use it, and the choices you have.</p>
-        <div class="page-hero__meta">
-          <i class="bi bi-calendar3"></i> Last updated: January 1, 2026
-        </div>
-      </div>
-    </section>
-
-    <div class="container">
-      <div class="legal-layout">
-
-        <aside class="toc">
-          <div class="toc__title">On This Page</div>
-          <nav class="toc__list">
-            <a href="#overview"   class="toc__link">1. Overview</a>
-            <a href="#collect"    class="toc__link">2. What We Collect</a>
-            <a href="#use-data"   class="toc__link">3. How We Use Data</a>
-            <a href="#storage"    class="toc__link">4. Data Storage</a>
-            <a href="#third"      class="toc__link">5. Third-Party Services</a>
-            <a href="#cookies"    class="toc__link">6. Cookies & Storage</a>
-            <a href="#rights"     class="toc__link">7. Your Rights</a>
-            <a href="#children"   class="toc__link">8. Children's Privacy</a>
-            <a href="#updates"    class="toc__link">9. Policy Updates</a>
-            <a href="#contact-privacy" class="toc__link">10. Contact</a>
-          </nav>
-        </aside>
-
-        <div class="legal-content">
-
-          <div class="notice-box">
-            <i class="bi bi-shield-check notice-box__icon"></i>
-            <p><strong>Short version:</strong> We keep it minimal. We do not sell your data. We do not show ads. The platform is largely stateless and uses only what's needed to provide the service.</p>
-          </div>
-
-          <div class="legal-section" id="overview">
-            <div class="legal-section__num">Section 01</div>
-            <h2 class="legal-section__title">Overview</h2>
-            <p>This Privacy Policy describes how <strong>Syntax Syndicate</strong> ("we", "us", or "our") collects, uses, and shares information when you use Syntax Archives ("the Service").</p>
-            <p>We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns, please <a href="contact.html" style="color:var(--clr-accent-2)">contact us</a>.</p>
-          </div>
-
-          <div class="legal-section" id="collect">
-            <div class="legal-section__num">Section 02</div>
-            <h2 class="legal-section__title">What We Collect</h2>
-            <p>We collect information in two ways: information you provide directly, and information collected automatically.</p>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Data Type</th>
-                  <th>How Collected</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Login credentials (username)</td>
-                  <td>Entered by user</td>
-                  <td>Authentication for premium access</td>
-                </tr>
-                <tr>
-                  <td>Session data</td>
-                  <td>Automatically via localStorage</td>
-                  <td>Maintaining login state between pages</td>
-                </tr>
-                <tr>
-                  <td>Browser & device info</td>
-                  <td>Automatically via browser APIs</td>
-                  <td>Providing a responsive experience</td>
-                </tr>
-                <tr>
-                  <td>Contact form submissions</td>
-                  <td>Entered by user</td>
-                  <td>Responding to inquiries</td>
-                </tr>
-              </tbody>
-            </table>
-            <p>We do <strong>not</strong> collect sensitive personal information such as payment details, government IDs, or biometric data.</p>
-          </div>
-
-          <div class="legal-section" id="use-data">
-            <div class="legal-section__num">Section 03</div>
-            <h2 class="legal-section__title">How We Use Your Data</h2>
-            <p>Information we collect is used strictly to operate and improve the Service:</p>
-            <ul>
-              <li>To authenticate users and manage access to premium content.</li>
-              <li>To maintain your session so you don't need to log in repeatedly.</li>
-              <li>To respond to your messages and support requests.</li>
-              <li>To monitor and analyze usage patterns to improve platform performance and content.</li>
-              <li>To protect the platform against abuse, fraud, and unauthorized access.</li>
-            </ul>
-            <p>We will <strong>never</strong> sell, rent, or trade your personal information to third parties for marketing purposes.</p>
-          </div>
-
-          <div class="legal-section" id="storage">
-            <div class="legal-section__num">Section 04</div>
-            <h2 class="legal-section__title">Data Storage & Security</h2>
-            <p>Syntax Archives is a primarily static platform. Most session data is stored locally in your browser's <code>localStorage</code> — it never leaves your device unless you interact with a form or backend service.</p>
-            <p>Where server-side data is involved (e.g., Firebase for authentication), we rely on industry-standard security practices provided by Google Firebase. We implement appropriate technical safeguards to prevent unauthorized access.</p>
-            <p>However, no method of transmission over the Internet is 100% secure. While we strive to use commercially acceptable means to protect your information, we cannot guarantee absolute security.</p>
-          </div>
-
-          <div class="legal-section" id="third">
-            <div class="legal-section__num">Section 05</div>
-            <h2 class="legal-section__title">Third-Party Services</h2>
-            <p>We use the following third-party services that may collect data as part of their operation:</p>
-            <ul>
-              <li><strong>Google Firebase</strong> — Backend services including authentication and data storage. Subject to Google's Privacy Policy.</li>
-              <li><strong>Google Fonts</strong> — Font loading. Google may log font requests. Subject to Google's Privacy Policy.</li>
-              <li><strong>Bootstrap Icons (jsDelivr CDN)</strong> — Icon delivery. Standard CDN request logging may apply.</li>
-            </ul>
-            <p>We encourage you to review the privacy policies of these third-party providers. We are not responsible for their privacy practices.</p>
-          </div>
-
-          <div class="legal-section" id="cookies">
-            <div class="legal-section__num">Section 06</div>
-            <h2 class="legal-section__title">Cookies & Local Storage</h2>
-            <p>We use <strong>localStorage</strong> (not traditional cookies) to store your authentication session. This data:</p>
-            <ul>
-              <li>Remains on your device and is not transmitted to our servers.</li>
-              <li>Is cleared when you log out or clear your browser's storage.</li>
-              <li>Is used only to keep you logged in between page visits.</li>
-            </ul>
-            <p>We do not use tracking cookies, advertising cookies, or any analytics cookies that profile your behavior across other websites.</p>
-          </div>
-
-          <div class="legal-section" id="rights">
-            <div class="legal-section__num">Section 07</div>
-            <h2 class="legal-section__title">Your Rights</h2>
-            <p>Depending on your location, you may have the following rights regarding your personal data:</p>
-            <ul>
-              <li><strong>Access:</strong> Request a copy of the data we hold about you.</li>
-              <li><strong>Correction:</strong> Request correction of inaccurate data.</li>
-              <li><strong>Deletion:</strong> Request that we delete your personal data.</li>
-              <li><strong>Portability:</strong> Request your data in a machine-readable format.</li>
-              <li><strong>Objection:</strong> Object to how we process your data in certain circumstances.</li>
-            </ul>
-            <p>To exercise any of these rights, please <a href="contact.html" style="color:var(--clr-accent-2)">contact us</a>. We will respond within 30 days.</p>
-          </div>
-
-          <div class="legal-section" id="children">
-            <div class="legal-section__num">Section 08</div>
-            <h2 class="legal-section__title">Children's Privacy</h2>
-            <p>Syntax Archives is not directed to children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us and we will promptly delete it.</p>
-          </div>
-
-          <div class="legal-section" id="updates">
-            <div class="legal-section__num">Section 09</div>
-            <h2 class="legal-section__title">Policy Updates</h2>
-            <p>We may update this Privacy Policy from time to time. We will notify you of significant changes by updating the "Last updated" date at the top of this page. We encourage you to review this page periodically.</p>
-          </div>
-
-          <div class="legal-section" id="contact-privacy">
-            <div class="legal-section__num">Section 10</div>
-            <h2 class="legal-section__title">Contact</h2>
-            <p>If you have any questions about this Privacy Policy or our data practices, please reach out:</p>
-            <div class="notice-box">
-              <i class="bi bi-envelope-fill notice-box__icon"></i>
-              <p>Visit our <a href="contact.html" style="color:var(--clr-accent-2);">Contact page</a> or learn more at <a href="https://syntaxsyndicate.co.in" style="color:var(--clr-accent-2);">syntaxsyndicate.co.in</a>. We aim to respond within 48 hours.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- ── Footer ── -->
-  <footer class="footer" role="contentinfo">
-    <div class="container">
-      <div class="footer__grid">
-        <div class="footer__brand">
-          <a href="index.html" class="navbar__logo" style="margin-bottom:0">
-            <div class="navbar__logo-icon" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-              </svg>
-            </div>
-            Syntax Archives
-          </a>
-          <p>A modern academic digital library platform. Access curated study materials anywhere, on any device.</p>
-        </div>
-        <div class="footer__col">
-          <h4>Navigation</h4>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="library.html">Public Library</a></li>
-            <li><a href="premium.html">Premium Access</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4>Categories</h4>
-          <ul>
-            <li><a href="library.html">Computer Science</a></li>
-            <li><a href="library.html">Mathematics</a></li>
-            <li><a href="library.html">Physics</a></li>
-            <li><a href="library.html">Chemistry</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4>Info</h4>
-          <ul>
-            <li><a href="about.html">About</a></li>
-            <li><a href="privacy.html">Privacy Policy</a></li>
-            <li><a href="terms.html">Terms of Use</a></li>
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer__bottom">
-        <span>© 2026 Syntax Archives. All rights reserved.</span>
-        <span>Built by Syntax Syndicate for learners everywhere</span>
-      </div>
-    </div>
-  </footer>
-
-  <script src="assets/js/main.js" defer></script>
-  <script src="assets/js/auth.js" defer></script>
-  <script>
-    (function () {
-      var PAIRS = [['nav-admin','mobile-nav-admin'],['nav-logout','mobile-nav-logout']];
-      function sync() {
-        PAIRS.forEach(function (pair) {
-          var d = document.getElementById(pair[0]);
-          var m = document.getElementById(pair[1]);
-          if (d && m) m.style.display = d.style.display;
-        });
+      /* Universal box-sizing — prevents padding/border from causing overflow */
+      *, *::before, *::after {
+        box-sizing: border-box;
       }
-      window.addEventListener('DOMContentLoaded', function () {
-        sync(); setTimeout(sync,300); setTimeout(sync,800); setTimeout(sync,2000);
-        var ml = document.getElementById('mobile-nav-logout');
-        var dl = document.getElementById('nav-logout');
-        if (ml && dl) ml.addEventListener('click', function(){ dl.click(); });
-        PAIRS.forEach(function(pair){
-          var d = document.getElementById(pair[0]);
-          if (d) new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['style']});
+
+      /* Hard stop on any horizontal overflow at root level */
+      html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      /* Constrain the container to viewport width with safe padding */
+      .container {
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: clamp(16px, 5vw, 40px) !important;
+        padding-right: clamp(16px, 5vw, 40px) !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Navbar must never overflow */
+      .navbar, .navbar__inner {
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      /* All images and embeds must be contained */
+      img, video, iframe, object, embed {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Any element with a fixed width wider than viewport will be clamped */
+      @media (max-width: 600px) {
+        [style*="width"] {
+          max-width: 100% !important;
+        }
+      }
+
+      button.navbar__link {
+        background: none;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        padding: 0;
+        margin: 0;
+        font: inherit;
+        color: inherit;
+        display: block;
+      }
+
+      /* ══════════════════════════════════════════
+       PRIVACY PAGE — Electric Blue Security
+    ══════════════════════════════════════════ */
+
+      :root {
+        --prv-blue: #c8a96e;
+        --prv-blue-bright: #c8a96e;
+        --prv-blue-glow: rgba(91, 141, 238, 0.12);
+        --prv-blue-border: rgba(91, 141, 238, 0.18);
+        --prv-blue-soft: rgba(91, 141, 238, 0.06);
+      }
+
+      /* Horizontal scan-line overlay */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(91, 141, 238, 0.012) 3px,
+          rgba(91, 141, 238, 0.012) 4px
+        );
+      }
+
+      /* ── Page Hero ── */
+      .page-hero {
+        padding: 100px 0 70px;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      .page-hero::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(91, 141, 238, 0.08) 0%,
+          rgba(91, 141, 238, 0.03) 40%,
+          transparent 70%
+        );
+        pointer-events: none;
+        animation: privPulse 4s ease-in-out infinite;
+      }
+      .page-hero::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 900px;
+        height: 900px;
+        border-radius: 50%;
+        border: 1px solid rgba(91, 141, 238, 0.06);
+        pointer-events: none;
+        animation: privRing 6s linear infinite;
+      }
+      @keyframes privPulse {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        50% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.6; }
+      }
+      @keyframes privRing {
+        0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+        50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.1; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      }
+
+      .page-hero__inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      .page-hero__shield {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 28px;
+        background: var(--prv-blue-glow);
+        border: 1px solid var(--prv-blue-border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--prv-blue);
+        box-shadow:
+          0 0 24px rgba(91, 141, 238, 0.25),
+          0 0 60px rgba(91, 141, 238, 0.08);
+        animation: shieldGlow 3s ease-in-out infinite;
+      }
+      @keyframes shieldGlow {
+        0%, 100% {
+          box-shadow: 0 0 24px #c8a96e, 0 0 60px #c8a96e;
+        }
+        50% {
+          box-shadow: 0 0 36px #c8a96e, 0 0 90px #c8a96e;
+        }
+      }
+
+      .page-hero__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--prv-blue);
+        background: var(--prv-blue-soft);
+        border: 1px solid var(--prv-blue-border);
+        padding: 5px 18px;
+        border-radius: 100px;
+        margin-bottom: 22px;
+      }
+      .page-hero__title {
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+        font-weight: 700;
+        color: var(--clr-text);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        margin-bottom: 18px;
+      }
+      .page-hero__title span {
+        background: linear-gradient(135deg, var(--prv-blue-bright), var(--prv-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .page-hero__subtitle {
+        font-size: 0.97rem;
+        color: var(--clr-text-muted);
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.75;
+      }
+      .page-hero__meta {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 22px;
+        font-size: 0.75rem;
+        color: var(--clr-text-faint);
+        border: 1px solid var(--prv-blue-border);
+        background: var(--prv-blue-soft);
+        padding: 5px 16px;
+        border-radius: 100px;
+        max-width: calc(100vw - 48px);
+        word-break: break-word;
+      }
+
+      /* ── Legal Layout ── */
+      .legal-layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr); /* minmax(0,1fr) is the key fix */
+        gap: 0;
+        padding: 52px 0 88px;
+        align-items: start;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      /* TOC — terminal window style */
+      .toc {
+        position: sticky;
+        top: 88px;
+        background: var(--clr-surface);
+        border: 1px solid var(--prv-blue-border);
+        border-radius: var(--radius-md);
+        padding: 24px;
+        box-shadow:
+          0 0 20px rgba(91, 141, 238, 0.05),
+          inset 0 1px 0 rgba(91, 141, 238, 0.08);
+      }
+
+      .toc::before {
+        content: "● ● ●";
+        display: block;
+        font-size: 0.5rem;
+        letter-spacing: 4px;
+        color: var(--prv-blue-border);
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--prv-blue-border);
+      }
+      .toc__title {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--prv-blue);
+        margin-bottom: 14px;
+      }
+      .toc__list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .toc__link {
+        font-size: 0.83rem;
+        color: var(--clr-text-muted);
+        padding: 7px 10px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background var(--t-fast), color var(--t-fast);
+      }
+      .toc__link::before {
+        content: ">";
+        color: var(--prv-blue);
+        font-size: 0.72rem;
+        opacity: 0;
+        transition: opacity var(--t-fast);
+        flex-shrink: 0;
+      }
+      .toc__link:hover::before { opacity: 1; }
+      .toc__link:hover {
+        background: var(--prv-blue-soft);
+        color: var(--prv-blue-bright);
+      }
+
+      /* Mobile TOC toggle button */
+      .toc__toggle {
+        display: none;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font: inherit;
+        color: var(--prv-blue);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0;
+        margin-bottom: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .toc__toggle-icon {
+        transition: transform 0.3s ease;
+        font-size: 0.9rem;
+      }
+      .toc__toggle[aria-expanded="false"] + .toc__collapse {
+        display: none;
+      }
+      .toc__toggle[aria-expanded="true"] .toc__toggle-icon {
+        transform: rotate(180deg);
+      }
+      .toc__toggle[aria-expanded="true"] + .toc__collapse {
+        display: block;
+        padding-top: 14px;
+      }
+
+      /* ── Legal Content ── */
+      .legal-content {
+        padding-left: 52px;
+        min-width: 0; /* critical for grid children — allows shrinking below content size */
+        overflow: hidden;
+        max-width: 100%;
+      }
+
+      .legal-section {
+        margin-bottom: 56px;
+      }
+
+      .legal-section__num {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--prv-blue);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .legal-section__num::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--prv-blue-border), transparent);
+      }
+
+      .legal-section__title {
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: var(--clr-text);
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--prv-blue-border);
+      }
+      .legal-section p {
+        color: var(--clr-text-muted);
+        line-height: 1.85;
+        margin-bottom: 14px;
+        font-size: 0.94rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        /* Ensure paragraphs don't overflow their container */
+        max-width: 100%;
+      }
+      .legal-section strong {
+        color: var(--clr-text);
+      }
+
+      .legal-section ul {
+        list-style: none;
+        margin: 0 0 16px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .legal-section ul li {
+        display: flex;
+        gap: 10px;
+        color: var(--clr-text-muted);
+        font-size: 0.93rem;
+        line-height: 1.72;
+        padding: 13px 18px;
+        background: var(--prv-blue-soft);
+        border: 1px solid var(--prv-blue-border);
+        border-radius: var(--radius-sm);
+        transition: border-color var(--t-fast), background var(--t-fast);
+        /* Crucial: lets the text flex-child shrink below its natural width */
+        min-width: 0;
+        overflow: hidden;
+        /* Wrap the text itself */
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+      /* Text content inside li must also be constrained */
+      .legal-section ul li > * {
+        min-width: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        flex: 1 1 0;
+      }
+      .legal-section ul li > .li-text {
+        flex: 1 1 0;
+        min-width: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+      .legal-section ul li::before {
+        content: "›";
+        color: var(--prv-blue);
+        font-weight: 700;
+        flex: 0 0 auto; /* never grow or shrink */
+        font-size: 1.1rem;
+        margin-top: 1px;
+        line-height: 1.72;
+      }
+      .legal-section ul li:hover {
+        border-color: rgba(91, 141, 238, 0.36);
+        background: rgba(91, 141, 238, 0.09);
+      }
+      .legal-section ul li::before {
+        content: "›";
+        color: var(--prv-blue);
+        font-weight: 700;
+        flex-shrink: 0;
+        font-size: 1.1rem;
+        margin-top: 1px;
+      }
+
+      /* Notice box */
+      .notice-box {
+        background: var(--prv-blue-soft);
+        border: 1px solid var(--prv-blue-border);
+        border-radius: var(--radius-md);
+        padding: 20px 24px;
+        margin-bottom: 18px;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 14px;
+        align-items: flex-start;
+        box-shadow: 0 0 16px rgba(91, 141, 238, 0.06);
+        min-width: 0;
+        overflow: hidden;
+      }
+      .notice-box__icon {
+        color: var(--prv-blue);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .notice-box p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--clr-text-muted);
+        line-height: 1.72;
+        min-width: 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+      .notice-box a { color: var(--prv-blue-bright) !important; }
+
+      /* Data table — scrollable on mobile */
+      .data-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 18px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--prv-blue-border);
+      }
+      .data-table {
+        width: 100%;
+        min-width: 480px;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: var(--prv-blue-soft);
+        color: var(--prv-blue-bright);
+        font-weight: 600;
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--prv-blue-border);
+        border-right: 1px solid var(--prv-blue-border);
+        letter-spacing: 0.04em;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+      .data-table th:last-child { border-right: none; }
+      .data-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--prv-blue-border);
+        border-right: 1px solid var(--prv-blue-border);
+        color: var(--clr-text-muted);
+        vertical-align: top;
+      }
+      .data-table td:last-child { border-right: none; }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:hover td { background: var(--prv-blue-soft); }
+
+      /* Scroll hint on mobile */
+      .data-table-scroll-hint {
+        display: none;
+        font-size: 0.72rem;
+        color: var(--clr-text-faint);
+        text-align: right;
+        margin-bottom: 6px;
+        letter-spacing: 0.04em;
+      }
+
+      /* Animations */
+      @keyframes privFadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .page-hero__inner { animation: privFadeUp 0.7s ease both; }
+      .legal-section { animation: privFadeUp 0.5s ease both; }
+      .legal-section:nth-child(2) { animation-delay: 0.05s; }
+      .legal-section:nth-child(3) { animation-delay: 0.1s; }
+      .legal-section:nth-child(4) { animation-delay: 0.15s; }
+      .legal-section:nth-child(5) { animation-delay: 0.2s; }
+      .legal-section:nth-child(6) { animation-delay: 0.25s; }
+      .legal-section:nth-child(7) { animation-delay: 0.3s; }
+      .legal-section:nth-child(8) { animation-delay: 0.35s; }
+      .legal-section:nth-child(9) { animation-delay: 0.4s; }
+      .legal-section:nth-child(10) { animation-delay: 0.45s; }
+
+      /* ══════════════════════════════════════════
+         RESPONSIVE — TABLET (≤ 900px)
+      ══════════════════════════════════════════ */
+      @media (max-width: 900px) {
+        .navbar__actions { display: none !important; }
+
+        .page-hero { padding: 80px 0 52px; }
+
+        .legal-layout {
+          grid-template-columns: 1fr;
+          padding: 32px 0 64px;
+        }
+
+        /* TOC becomes collapsible accordion */
+        .toc {
+          position: static;
+          margin-bottom: 28px;
+        }
+        .toc__toggle {
+          display: flex;
+          margin-bottom: 0;
+        }
+        /* Hide the static title, show the toggle instead */
+        .toc__title { display: none; }
+
+        /* Wrap list in collapse div (JS toggles aria-expanded) */
+        .toc__list {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        .toc__link {
+          flex: 1 1 auto;
+          font-size: 0.78rem;
+          padding: 6px 10px;
+          white-space: nowrap;
+        }
+
+        .legal-content { padding-left: 0; }
+
+        .legal-section { margin-bottom: 40px; }
+
+        .legal-section__title { font-size: 1.2rem; }
+
+        .legal-section ul li {
+          font-size: 0.9rem;
+          padding: 11px 14px;
+        }
+
+        .notice-box { padding: 16px 18px; gap: 12px; }
+
+        .data-table-scroll-hint { display: block; }
+      }
+
+      /* ══════════════════════════════════════════
+         RESPONSIVE — MOBILE (≤ 600px)
+      ══════════════════════════════════════════ */
+      @media (max-width: 600px) {
+        .page-hero {
+          padding: 72px 0 44px;
+        }
+
+        .page-hero__shield {
+          width: 64px;
+          height: 64px;
+          font-size: 1.6rem;
+          margin-bottom: 20px;
+        }
+
+        .page-hero__eyebrow {
+          font-size: 0.65rem;
+          padding: 4px 14px;
+          letter-spacing: 0.14em;
+        }
+
+        .page-hero__title {
+          font-size: clamp(1.9rem, 8vw, 2.8rem);
+          letter-spacing: -0.015em;
+        }
+
+        .page-hero__subtitle {
+          font-size: 0.9rem;
+          padding: 0 8px;
+        }
+
+        .page-hero__meta {
+          font-size: 0.7rem;
+          padding: 4px 12px;
+          gap: 6px;
+          /* Allow wrapping on very small screens */
+          flex-wrap: wrap;
+          justify-content: center;
+          max-width: 280px;
+          text-align: center;
+        }
+
+        .legal-layout {
+          padding: 24px 0 52px;
+        }
+
+        /* TOC links stack in a compact grid */
+        .toc { padding: 18px; }
+        .toc__list { flex-direction: column; gap: 2px; }
+        .toc__link {
+          flex: unset;
+          font-size: 0.82rem;
+          white-space: normal;
+        }
+
+        .legal-section { margin-bottom: 36px; }
+
+        .legal-section__num {
+          font-size: 0.6rem;
+          letter-spacing: 0.18em;
+        }
+
+        .legal-section__title {
+          font-size: 1.1rem;
+          margin-bottom: 14px;
+          padding-bottom: 12px;
+        }
+
+        .legal-section p {
+          font-size: 0.9rem;
+          line-height: 1.78;
+        }
+
+        .legal-section ul li {
+          font-size: 0.88rem;
+          padding: 10px 12px;
+          gap: 10px;
+        }
+
+        .notice-box {
+          padding: 14px 16px;
+          gap: 10px;
+          flex-direction: row;
+          align-items: flex-start;
+        }
+        .notice-box__icon { font-size: 1rem; }
+        .notice-box p { font-size: 0.86rem; }
+
+        /* Table scroll hint more prominent */
+        .data-table-scroll-hint {
+          font-size: 0.7rem;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 4px;
+        }
+        .data-table-scroll-hint::before {
+          content: "←  →";
+          font-size: 0.65rem;
+          opacity: 0.5;
+        }
+      }
+
+      /* ══════════════════════════════════════════
+         RESPONSIVE — EXTRA SMALL (≤ 380px)
+      ══════════════════════════════════════════ */
+      @media (max-width: 380px) {
+        .page-hero { padding: 64px 0 36px; }
+
+        .page-hero__shield {
+          width: 56px;
+          height: 56px;
+          font-size: 1.4rem;
+        }
+
+        .page-hero__title {
+          font-size: 1.75rem;
+        }
+
+        .page-hero__meta {
+          font-size: 0.65rem;
+        }
+
+        .toc { padding: 14px; }
+        .notice-box { padding: 12px 14px; }
+
+        .legal-section ul li {
+          font-size: 0.85rem;
+          padding: 9px 10px;
+        }
+      }
+
+      /* Smooth scroll for anchor links */
+      html { scroll-behavior: smooth; }
+
+      /* Scroll offset for sticky navbar */
+      .legal-section[id] {
+        scroll-margin-top: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Navigation ── -->
+    <header class="navbar" role="banner">
+      <div class="container navbar__inner">
+        <a href="index.html" class="navbar__logo" aria-label="PDF Library home">
+          <div class="navbar__logo-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          Syntax Archives
+        </a>
+        <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+          <a href="index.html" class="navbar__link">Home</a>
+          <a href="library.html" class="navbar__link">Library</a>
+          <a href="premium.html" class="navbar__link">Premium</a>
+        </nav>
+        <div class="navbar__actions">
+          <a href="library.html" class="btn btn-outline btn-sm">Browse</a>
+          <a href="admin.html" class="btn btn-ghost btn-sm" id="nav-admin" style="display: none">⚙ Admin</a>
+          <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
+          <button class="btn btn-ghost btn-sm" id="nav-logout" style="display: none">Logout</button>
+        </div>
+        <button class="navbar__burger" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="navbar__mobile" aria-label="Mobile navigation">
+      <a href="index.html" class="navbar__link">Home</a>
+      <a href="library.html" class="navbar__link">Library</a>
+      <a href="premium.html" class="navbar__link">★ Premium</a>
+      <a href="admin.html" class="navbar__link" id="mobile-nav-admin" style="display: none">⚙ Admin</a>
+      <button class="navbar__link" id="mobile-nav-logout" style="display: none">Logout</button>
+    </nav>
+
+    <main>
+      <!-- ── Page Hero ── -->
+      <section class="page-hero">
+        <div class="container">
+          <div class="page-hero__inner">
+            <div class="page-hero__shield">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <div class="page-hero__eyebrow">
+              <i class="bi bi-lock-fill"></i> Your Privacy Matters
+            </div>
+            <h1 class="page-hero__title"><span>Privacy</span> Policy</h1>
+            <p class="page-hero__subtitle">
+              Your privacy matters to us. This policy explains what information
+              we collect, how we use it, and the choices you have.
+            </p>
+            <div class="page-hero__meta">
+              <i class="bi bi-calendar3"></i> Last updated: January 1, 2026
+              &nbsp;·&nbsp; Syntax Archives v1.0
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <div class="legal-layout">
+          <!-- TOC Sidebar -->
+          <aside class="toc">
+            <!-- Mobile toggle -->
+            <button class="toc__toggle" id="toc-toggle" aria-expanded="false" aria-controls="toc-collapse">
+              <span>On This Page</span>
+              <i class="bi bi-chevron-down toc__toggle-icon"></i>
+            </button>
+            <!-- Static title for desktop -->
+            <div class="toc__title">On This Page</div>
+            <!-- Collapsible wrapper -->
+            <div id="toc-collapse" class="toc__collapse">
+              <nav class="toc__list" aria-label="Page contents">
+                <a href="#overview" class="toc__link">1. Overview</a>
+                <a href="#collect" class="toc__link">2. What We Collect</a>
+                <a href="#use-data" class="toc__link">3. How We Use Data</a>
+                <a href="#storage" class="toc__link">4. Data Storage</a>
+                <a href="#third" class="toc__link">5. Third-Party Services</a>
+                <a href="#cookies" class="toc__link">6. Cookies &amp; Storage</a>
+                <a href="#rights" class="toc__link">7. Your Rights</a>
+                <a href="#children" class="toc__link">8. Children's Privacy</a>
+                <a href="#updates" class="toc__link">9. Policy Updates</a>
+                <a href="#contact-privacy" class="toc__link">10. Contact</a>
+              </nav>
+            </div>
+          </aside>
+
+          <!-- Main Content -->
+          <div class="legal-content">
+            <div class="notice-box">
+              <i class="bi bi-shield-check notice-box__icon"></i>
+              <p>
+                <strong>Short version:</strong> We keep it minimal. We do not
+                sell your data. We do not show ads. The platform is largely
+                stateless and uses only what's needed to provide the service.
+              </p>
+            </div>
+
+            <div class="legal-section" id="overview">
+              <div class="legal-section__num">Section 01</div>
+              <h2 class="legal-section__title">Overview</h2>
+              <p>
+                This Privacy Policy describes how
+                <strong>Syntax Syndicate</strong> ("we", "us", or "our")
+                collects, uses, and shares information when you use Syntax
+                Archives ("the Service").
+              </p>
+              <p>
+                We are committed to protecting your personal information and
+                your right to privacy. If you have any questions or concerns,
+                please
+                <a href="contact.html" style="color: var(--prv-blue-bright)">contact us</a>.
+              </p>
+            </div>
+
+            <div class="legal-section" id="collect">
+              <div class="legal-section__num">Section 02</div>
+              <h2 class="legal-section__title">What We Collect</h2>
+              <p>
+                We collect information in two ways: information you provide
+                directly, and information collected automatically.
+              </p>
+              <p class="data-table-scroll-hint" aria-hidden="true">Scroll to see full table</p>
+              <div class="data-table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Data Type</th>
+                      <th>How Collected</th>
+                      <th>Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Login credentials (username)</td>
+                      <td>Entered by user</td>
+                      <td>Authentication for premium access</td>
+                    </tr>
+                    <tr>
+                      <td>Session data</td>
+                      <td>Automatically via localStorage</td>
+                      <td>Maintaining login state between pages</td>
+                    </tr>
+                    <tr>
+                      <td>Browser &amp; device info</td>
+                      <td>Automatically via browser APIs</td>
+                      <td>Providing a responsive experience</td>
+                    </tr>
+                    <tr>
+                      <td>Contact form submissions</td>
+                      <td>Entered by user</td>
+                      <td>Responding to inquiries</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                We do <strong>not</strong> collect sensitive personal
+                information such as payment details, government IDs, or
+                biometric data.
+              </p>
+            </div>
+
+            <div class="legal-section" id="use-data">
+              <div class="legal-section__num">Section 03</div>
+              <h2 class="legal-section__title">How We Use Your Data</h2>
+              <p>Information we collect is used strictly to operate and improve the Service:</p>
+              <ul>
+                <li><span class="li-text">To authenticate users and manage access to premium content.</span></li>
+                <li><span class="li-text">To maintain your session so you don't need to log in repeatedly.</span></li>
+                <li><span class="li-text">To respond to your messages and support requests.</span></li>
+                <li><span class="li-text">To monitor and analyze usage patterns to improve platform performance and content.</span></li>
+                <li><span class="li-text">To protect the platform against abuse, fraud, and unauthorized access.</span></li>
+              </ul>
+              <p>
+                We will <strong>never</strong> sell, rent, or trade your
+                personal information to third parties for marketing purposes.
+              </p>
+            </div>
+
+            <div class="legal-section" id="storage">
+              <div class="legal-section__num">Section 04</div>
+              <h2 class="legal-section__title">Data Storage &amp; Security</h2>
+              <p>
+                Syntax Archives is a primarily static platform. Most session
+                data is stored locally in your browser's
+                <code>localStorage</code> — it never leaves your device unless
+                you interact with a form or backend service.
+              </p>
+              <p>
+                Where server-side data is involved (e.g., Firebase for
+                authentication), we rely on industry-standard security practices
+                provided by Google Firebase. We implement appropriate technical
+                safeguards to prevent unauthorized access.
+              </p>
+              <p>
+                However, no method of transmission over the Internet is 100%
+                secure. While we strive to use commercially acceptable means to
+                protect your information, we cannot guarantee absolute security.
+              </p>
+            </div>
+
+            <div class="legal-section" id="third">
+              <div class="legal-section__num">Section 05</div>
+              <h2 class="legal-section__title">Third-Party Services</h2>
+              <p>We use the following third-party services that may collect data as part of their operation:</p>
+              <ul>
+                <li><span class="li-text">
+                  <strong>Google Firebase</strong> — Backend services including
+                  authentication and data storage. Subject to Google's Privacy Policy.
+                </span></li>
+                <li><span class="li-text">
+                  <strong>Google Fonts</strong> — Font loading. Google may log
+                  font requests. Subject to Google's Privacy Policy.
+                </span></li>
+                <li><span class="li-text">
+                  <strong>Bootstrap Icons (jsDelivr CDN)</strong> — Icon
+                  delivery. Standard CDN request logging may apply.
+                </span></li>
+              </ul>
+              <p>
+                We encourage you to review the privacy policies of these
+                third-party providers. We are not responsible for their privacy practices.
+              </p>
+            </div>
+
+            <div class="legal-section" id="cookies">
+              <div class="legal-section__num">Section 06</div>
+              <h2 class="legal-section__title">Cookies &amp; Local Storage</h2>
+              <p>We use <strong>localStorage</strong> (not traditional cookies) to store your authentication session. This data:</p>
+              <ul>
+                <li><span class="li-text">Remains on your device and is not transmitted to our servers.</span></li>
+                <li><span class="li-text">Is cleared when you log out or clear your browser's storage.</span></li>
+                <li><span class="li-text">Is used only to keep you logged in between page visits.</span></li>
+              </ul>
+              <p>
+                We do not use tracking cookies, advertising cookies, or any
+                analytics cookies that profile your behavior across other websites.
+              </p>
+            </div>
+
+            <div class="legal-section" id="rights">
+              <div class="legal-section__num">Section 07</div>
+              <h2 class="legal-section__title">Your Rights</h2>
+              <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+              <ul>
+                <li><span class="li-text"><strong>Access:</strong> Request a copy of the data we hold about you.</span></li>
+                <li><span class="li-text"><strong>Correction:</strong> Request correction of inaccurate data.</span></li>
+                <li><span class="li-text"><strong>Deletion:</strong> Request that we delete your personal data.</span></li>
+                <li><span class="li-text"><strong>Portability:</strong> Request your data in a machine-readable format.</span></li>
+                <li><span class="li-text"><strong>Objection:</strong> Object to how we process your data in certain circumstances.</span></li>
+              </ul>
+              <p>
+                To exercise any of these rights, please
+                <a href="contact.html" style="color: var(--prv-blue-bright)">contact us</a>.
+                We will respond within 30 days.
+              </p>
+            </div>
+
+            <div class="legal-section" id="children">
+              <div class="legal-section__num">Section 08</div>
+              <h2 class="legal-section__title">Children's Privacy</h2>
+              <p>
+                Syntax Archives is not directed to children under the age of 13.
+                We do not knowingly collect personal information from children
+                under 13. If you are a parent or guardian and believe your child
+                has provided us with personal information, please contact us and
+                we will promptly delete it.
+              </p>
+            </div>
+
+            <div class="legal-section" id="updates">
+              <div class="legal-section__num">Section 09</div>
+              <h2 class="legal-section__title">Policy Updates</h2>
+              <p>
+                We may update this Privacy Policy from time to time. We will
+                notify you of significant changes by updating the "Last updated"
+                date at the top of this page. We encourage you to review this
+                page periodically.
+              </p>
+            </div>
+
+            <div class="legal-section" id="contact-privacy">
+              <div class="legal-section__num">Section 10</div>
+              <h2 class="legal-section__title">Contact</h2>
+              <p>
+                If you have any questions about this Privacy Policy or our data
+                practices, please reach out:
+              </p>
+              <div class="notice-box">
+                <i class="bi bi-envelope-fill notice-box__icon"></i>
+                <p>
+                  Visit our <a href="contact.html">Contact page</a> or learn more at
+                  <a href="https://syntaxsyndicate.co.in">syntaxsyndicate.co.in</a>.
+                  We aim to respond within 48 hours.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer__grid">
+          <div class="footer__brand">
+            <a href="index.html" class="navbar__logo" style="margin-bottom: 0">
+              <div class="navbar__logo-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              Syntax Archives
+            </a>
+            <p>A modern academic digital library platform. Access curated study materials anywhere, on any device.</p>
+          </div>
+          <div class="footer__col">
+            <h4>Navigation</h4>
+            <ul>
+              <li><span class="li-text"><a href="index.html">Home</a></span></li>
+              <li><span class="li-text"><a href="library.html">Public Library</a></span></li>
+              <li><span class="li-text"><a href="premium.html">Premium Access</a></span></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>Categories</h4>
+            <ul>
+              <li><span class="li-text"><a href="library.html">Computer Science</a></span></li>
+              <li><span class="li-text"><a href="library.html">Mathematics</a></span></li>
+              <li><span class="li-text"><a href="library.html">Physics</a></span></li>
+              <li><span class="li-text"><a href="library.html">Chemistry</a></span></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h4>Info</h4>
+            <ul>
+              <li><span class="li-text"><a href="about.html">About</a></span></li>
+              <li><span class="li-text"><a href="privacy.html">Privacy Policy</a></span></li>
+              <li><span class="li-text"><a href="terms.html">Terms of Use</a></span></li>
+              <li><span class="li-text"><a href="contact.html">Contact</a></span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <span>© 2026 Syntax Archives. All rights reserved.</span>
+          <span>Built by Syntax Syndicate for learners everywhere</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="assets/js/main.js" defer></script>
+    <script src="assets/js/auth.js" defer></script>
+    <script>
+      /* ── Navbar auth sync ── */
+      (function () {
+        var PAIRS = [
+          ["nav-admin", "mobile-nav-admin"],
+          ["nav-logout", "mobile-nav-logout"],
+        ];
+        function sync() {
+          PAIRS.forEach(function (pair) {
+            var d = document.getElementById(pair[0]);
+            var m = document.getElementById(pair[1]);
+            if (d && m) m.style.display = d.style.display;
+          });
+        }
+        window.addEventListener("DOMContentLoaded", function () {
+          sync();
+          setTimeout(sync, 300);
+          setTimeout(sync, 800);
+          setTimeout(sync, 2000);
+          var ml = document.getElementById("mobile-nav-logout");
+          var dl = document.getElementById("nav-logout");
+          if (ml && dl)
+            ml.addEventListener("click", function () { dl.click(); });
+          PAIRS.forEach(function (pair) {
+            var d = document.getElementById(pair[0]);
+            if (d)
+              new MutationObserver(sync).observe(d, {
+                attributes: true,
+                attributeFilter: ["style"],
+              });
+          });
         });
-      });
-    })();
-  </script>
-</body>
+      })();
+
+      /* ── Mobile TOC accordion ── */
+      (function () {
+        window.addEventListener("DOMContentLoaded", function () {
+          var toggle = document.getElementById("toc-toggle");
+          var collapse = document.getElementById("toc-collapse");
+          if (!toggle || !collapse) return;
+
+          // Only activate accordion on mobile/tablet (≤ 900px)
+          function isMobile() { return window.innerWidth <= 900; }
+
+          // Initial state: collapsed on mobile
+          function init() {
+            if (isMobile()) {
+              toggle.style.display = "flex";
+              toggle.setAttribute("aria-expanded", "false");
+              collapse.style.display = "none";
+            } else {
+              toggle.style.display = "none";
+              collapse.style.display = "block";
+              collapse.style.paddingTop = "";
+            }
+          }
+
+          toggle.addEventListener("click", function () {
+            var expanded = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!expanded));
+            if (!expanded) {
+              collapse.style.display = "block";
+              collapse.style.paddingTop = "14px";
+            } else {
+              collapse.style.display = "none";
+              collapse.style.paddingTop = "";
+            }
+          });
+
+          // Close TOC after clicking a link (mobile UX)
+          collapse.querySelectorAll(".toc__link").forEach(function (link) {
+            link.addEventListener("click", function () {
+              if (isMobile()) {
+                toggle.setAttribute("aria-expanded", "false");
+                collapse.style.display = "none";
+                collapse.style.paddingTop = "";
+              }
+            });
+          });
+
+          init();
+          window.addEventListener("resize", init);
+        });
+      })();
+    </script>
+      <!-- FINAL MOBILE OVERRIDE — loads last, beats style.css -->
+    <style>
+      html { overflow-x: hidden !important; }
+      body { overflow-x: hidden !important; width: 100% !important; max-width: 100vw !important; }
+
+      .container {
+        width: 100% !important;
+        max-width: 1200px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+      }
+
+      .legal-layout {
+        display: grid !important;
+        grid-template-columns: 260px minmax(0, 1fr) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .legal-content {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        padding-left: 48px !important;
+        box-sizing: border-box !important;
+      }
+
+      .legal-section {
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+      }
+
+      .legal-section p,
+      .legal-section h2 {
+        max-width: 100% !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+      }
+
+      /* Switch list items to block — eliminates all flex overflow issues */
+      .legal-section ul {
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 0 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .legal-section ul li {
+        display: block !important;
+        position: relative !important;
+        padding: 12px 16px 12px 36px !important;
+        background: var(--prv-blue-soft) !important;
+        border: 1px solid var(--prv-blue-border) !important;
+        border-radius: 6px !important;
+        color: var(--clr-text-muted) !important;
+        font-size: 0.93rem !important;
+        line-height: 1.72 !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+      }
+
+      .legal-section ul li::before {
+        content: "\203A" !important;
+        position: absolute !important;
+        left: 14px !important;
+        top: 11px !important;
+        color: var(--prv-blue) !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        line-height: 1.72 !important;
+      }
+
+      .legal-section ul li .li-text {
+        display: inline !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+      }
+
+      .notice-box {
+        display: flex !important;
+        gap: 12px !important;
+        align-items: flex-start !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .notice-box p {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+      }
+
+      @media (max-width: 900px) {
+        .legal-layout {
+          grid-template-columns: 1fr !important;
+        }
+        .legal-content {
+          padding-left: 0 !important;
+        }
+        .toc {
+          position: static !important;
+          margin-bottom: 24px !important;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding-left: 16px !important;
+          padding-right: 16px !important;
+        }
+        .page-hero__meta {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          justify-content: center !important;
+          max-width: calc(100vw - 32px) !important;
+          text-align: center !important;
+          font-size: 0.7rem !important;
+        }
+        .legal-section ul li {
+          font-size: 0.88rem !important;
+          padding: 10px 12px 10px 30px !important;
+        }
+        .legal-section ul li::before {
+          left: 11px !important;
+          top: 9px !important;
+        }
+      }
+    </style>
+
+  </body>
 </html>
