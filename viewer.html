@@ -315,6 +315,50 @@
     #viewer-container:-ms-fullscreen      #btn-exit-fullscreen {
       display: inline-flex;
     }
+    /* Wrapper */
+.ad-wrapper {
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;   /* centers inline elements */
+}
+
+.ad-banner {
+  display: inline-block;
+  max-width: 1080px;   /* max desktop size */
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ========================= */
+/* 📱 Mobile (≤ 480px) */
+/* ========================= */
+@media (max-width: 480px) {
+  .ad-banner {
+    width: 100%;
+    height: auto; /* maintain ratio */
+  }
+}
+
+/* ========================= */
+/* 📱 Small Tablets (481px–768px) */
+/* ========================= */
+@media (max-width: 768px) {
+  .ad-banner {
+    width: 95%;
+    height: auto;
+  }
+}
+
+/* ========================= */
+/* 💻 Tablets & Small Laptops (769px–1024px) */
+/* ========================= */
+@media (max-width: 1024px) {
+  .ad-banner {
+    width: 90%;
+    height: auto;
+  }
+}
   </style>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -339,7 +383,6 @@
         <a href="premium.html" class="navbar__link">Premium</a>
       </nav>
       <div class="navbar__actions">
-        <a href="library.html" class="btn btn-outline btn-sm">← Back</a>
         <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
       </div>
       <button class="navbar__burger" aria-label="Toggle menu">
@@ -386,7 +429,7 @@
     </div>
 
 <!-- Ad Banner -->
-<div class="ad-wrapper" role="complementary" aria-label="Advertisement" style="">
+<div class="ad-wrapper" role="complementary" aria-label="Advertisement">
   <a href="https://syntaxsyndicate.co.in" target="_blank" rel="noopener noreferrer">
     <img 
       src="assets/images/syntax-ad-banner.png" 
