@@ -1425,3 +1425,48 @@ p  { color: var(--clr-text-muted); }
 .admin-toast.show { opacity: 1; transform: translateY(0); }
 .admin-toast.success { border-color: rgba(76,175,128,0.4); color: var(--clr-success); }
 .admin-toast.error   { border-color: rgba(224,92,92,0.4);  color: var(--clr-error); }
+
+/* Wrapper */
+.ad-wrapper {
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;   /* centers inline elements */
+}
+
+.ad-banner {
+  display: inline-block;
+  max-width: 1080px;   /* max desktop size */
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ========================= */
+/* 📱 Mobile (≤ 480px) */
+/* ========================= */
+@media (max-width: 480px) {
+  .ad-banner {
+    width: 100%;
+    height: auto; /* maintain ratio */
+  }
+}
+
+/* ========================= */
+/* 📱 Small Tablets (481px–768px) */
+/* ========================= */
+@media (max-width: 768px) {
+  .ad-banner {
+    width: 95%;
+    height: auto;
+  }
+}
+
+/* ========================= */
+/* 💻 Tablets & Small Laptops (769px–1024px) */
+/* ========================= */
+@media (max-width: 1024px) {
+  .ad-banner {
+    width: 90%;
+    height: auto;
+  }
+}

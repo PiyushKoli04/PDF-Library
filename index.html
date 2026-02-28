@@ -42,6 +42,50 @@
       color: inherit;
       display: block;
     }
+/* Wrapper */
+.ad-wrapper {
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;   /* centers inline elements */
+}
+
+.ad-banner {
+  display: inline-block;
+  max-width: 1080px;   /* max desktop size */
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ========================= */
+/* 📱 Mobile (≤ 480px) */
+/* ========================= */
+@media (max-width: 480px) {
+  .ad-banner {
+    width: 100%;
+    height: auto; /* maintain ratio */
+  }
+}
+
+/* ========================= */
+/* 📱 Small Tablets (481px–768px) */
+/* ========================= */
+@media (max-width: 768px) {
+  .ad-banner {
+    width: 95%;
+    height: auto;
+  }
+}
+
+/* ========================= */
+/* 💻 Tablets & Small Laptops (769px–1024px) */
+/* ========================= */
+@media (max-width: 1024px) {
+  .ad-banner {
+    width: 90%;
+    height: auto;
+  }
+}
   </style>
 </head>
 <body>
@@ -144,12 +188,16 @@
       </div>
     </section>
 
-    <!-- Ad Placeholder -->
-    <div class="container">
-      <div class="ad-placeholder ad-placeholder--leaderboard" role="complementary" aria-label="Advertisement">
-        Advertisement (728×90)
-      </div>
-    </div>
+<!-- Ad Banner -->
+<div class="ad-wrapper" role="complementary" aria-label="Advertisement" style="">
+  <a href="https://syntaxsyndicate.co.in" target="_blank" rel="noopener noreferrer">
+    <img 
+      src="assets/images/syntax-ad-banner.png" 
+      alt="Join Syntax Syndicate Community"
+      class="ad-banner"
+    >
+  </a>
+</div>
 
     <!-- ── Features ── -->
     <section class="section features" aria-labelledby="features-title">
