@@ -17,6 +17,18 @@
   <script src="assets/js/auth.js" defer></script>
 
   <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: hidden; max-width: 100%; }
+    .container {
+      width: 100% !important;
+      max-width: 1200px !important;
+      padding-left: clamp(16px, 5vw, 40px) !important;
+      padding-right: clamp(16px, 5vw, 40px) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      box-sizing: border-box !important;
+    }
+
     @media (max-width: 768px) { .navbar__actions { display: none !important; } }
     button.navbar__link {
       background: none; border: none; cursor: pointer;
@@ -71,18 +83,24 @@
 
     .contact-grid {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: minmax(0, 1fr) 420px;
       gap: 48px;
       align-items: start;
     }
-    @media (max-width: 960px) { .contact-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 960px) {
+      .contact-grid { grid-template-columns: 1fr; }
+    }
 
-    /* Form */
+    /* Form card */
     .contact-form-card {
       background: var(--clr-surface);
       border: 1px solid var(--clr-border);
       border-radius: var(--radius-xl);
       padding: 40px;
+      min-width: 0;
+    }
+    @media (max-width: 600px) {
+      .contact-form-card { padding: 24px 18px; border-radius: var(--radius-lg); }
     }
     .contact-form-card h2 {
       font-family: var(--font-display);
@@ -106,10 +124,7 @@
       margin-bottom: 8px;
       letter-spacing: 0.02em;
     }
-    .form-label span {
-      color: var(--clr-success);
-      margin-left: 2px;
-    }
+    .form-label span { color: var(--clr-success); margin-left: 2px; }
     .form-input, .form-select, .form-textarea {
       width: 100%;
       background: var(--clr-surface-2);
@@ -122,6 +137,7 @@
       transition: border-color var(--t-fast), box-shadow var(--t-fast);
       outline: none;
       appearance: none;
+      box-sizing: border-box;
     }
     .form-input:focus, .form-select:focus, .form-textarea:focus {
       border-color: var(--clr-success);
@@ -129,7 +145,12 @@
     }
     .form-input::placeholder, .form-textarea::placeholder { color: var(--clr-text-faint); }
     .form-textarea { resize: vertical; min-height: 140px; line-height: 1.6; }
-    .form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a90a2' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a90a2' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
     .form-select option { background: #1a1e29; }
 
     .form-row {
@@ -138,6 +159,19 @@
       gap: 16px;
     }
     @media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+    /* Error state */
+    .form-input.error, .form-select.error, .form-textarea.error {
+      border-color: #e05c5c;
+      box-shadow: 0 0 0 3px rgba(224,92,92,0.12);
+    }
+    .field-error {
+      font-size: 0.78rem;
+      color: #e05c5c;
+      margin-top: 5px;
+      display: none;
+    }
+    .field-error.visible { display: block; }
 
     .btn-submit {
       width: 100%;
@@ -157,8 +191,22 @@
       margin-top: 8px;
       transition: opacity var(--t-fast), transform var(--t-fast);
     }
-    .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-submit:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
     .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Spinner inside button */
+    .btn-submit .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Success state */
     .form-success {
@@ -185,7 +233,7 @@
     .form-success p { color: var(--clr-text-muted); font-size: 0.9rem; }
 
     /* Info Sidebar */
-    .contact-info { display: flex; flex-direction: column; gap: 20px; }
+    .contact-info { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 
     .info-card {
       background: var(--clr-surface);
@@ -194,6 +242,7 @@
       padding: 28px;
       transition: border-color var(--t-normal), transform var(--t-normal);
     }
+    @media (max-width: 600px) { .info-card { padding: 20px 16px; } }
     .info-card:hover { border-color: rgba(76,175,128,0.25); transform: translateY(-2px); }
 
     .info-card__header {
@@ -219,7 +268,13 @@
       color: var(--clr-text);
     }
     .info-card__subtitle { font-size: 0.78rem; color: var(--clr-text-muted); margin-top: 2px; }
-    .info-card__body { font-size: 0.88rem; color: var(--clr-text-muted); line-height: 1.7; }
+    .info-card__body {
+      font-size: 0.88rem;
+      color: var(--clr-text-muted);
+      line-height: 1.7;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
     .info-card__link {
       display: inline-flex;
       align-items: center;
@@ -248,6 +303,8 @@
       border: 1px solid var(--clr-border);
       border-radius: var(--radius-lg);
       padding: 24px;
+      min-width: 0;
+      overflow: hidden;
     }
     .faq-item__q {
       font-family: var(--font-display);
@@ -258,6 +315,8 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .faq-item__q::before {
       content: 'Q';
@@ -276,6 +335,8 @@
       color: var(--clr-text-muted);
       line-height: 1.7;
       padding-left: 32px;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -343,6 +404,7 @@
                 <div class="form-group">
                   <label class="form-label" for="first-name">First Name <span>*</span></label>
                   <input type="text" id="first-name" class="form-input" placeholder="e.g. Arjun" required />
+                  <div class="field-error" id="err-first-name">Please enter your first name.</div>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="last-name">Last Name</label>
@@ -353,28 +415,35 @@
               <div class="form-group">
                 <label class="form-label" for="email">Email Address <span>*</span></label>
                 <input type="email" id="email" class="form-input" placeholder="you@example.com" required />
+                <div class="field-error" id="err-email">Please enter a valid email address.</div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="subject">Subject <span>*</span></label>
                 <select id="subject" class="form-select form-input" required>
                   <option value="" disabled selected>Select a topic…</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="premium">Premium Access</option>
-                  <option value="content">Content / Documents</option>
-                  <option value="bug">Bug Report</option>
-                  <option value="feedback">Feedback & Suggestions</option>
-                  <option value="other">Other</option>
+                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="Premium Access">Premium Access</option>
+                  <option value="Content / Documents">Content / Documents</option>
+                  <option value="Bug Report">Bug Report</option>
+                  <option value="Feedback & Suggestions">Feedback &amp; Suggestions</option>
+                  <option value="Other">Other</option>
                 </select>
+                <div class="field-error" id="err-subject">Please select a subject.</div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="message">Message <span>*</span></label>
                 <textarea id="message" class="form-textarea" placeholder="Tell us what's on your mind…" required></textarea>
+                <div class="field-error" id="err-message">Please enter your message.</div>
               </div>
 
-              <button type="submit" class="btn-submit">
-                <i class="bi bi-send-fill"></i> Send Message
+              <!-- Submit error banner -->
+              <div id="submit-error" style="display:none; background:rgba(224,92,92,0.1); border:1px solid rgba(224,92,92,0.3); border-radius:8px; padding:12px 16px; margin-bottom:14px; font-size:0.88rem; color:#e05c5c;"></div>
+
+              <button type="submit" class="btn-submit" id="submit-btn">
+                <span class="spinner"></span>
+                <span class="btn-text"><i class="bi bi-send-fill"></i> Send Message</span>
               </button>
             </form>
 
@@ -424,7 +493,7 @@
                   <div class="info-card__subtitle">When to expect a reply</div>
                 </div>
               </div>
-              <p class="info-card__body">We typically respond to all messages within <strong style="color:var(--clr-text)">48 hours</strong>. For urgent issues, the WhatsApp community is usually faster.</p>
+              <p class="info-card__body">We typically respond within <strong style="color:var(--clr-text)">48 hours</strong>. For urgent issues, the WhatsApp community is usually faster.</p>
             </div>
 
             <div class="info-card">
@@ -469,7 +538,7 @@
           </div>
           <div class="faq-item">
             <div class="faq-item__q">How can I suggest a document to add?</div>
-            <p class="faq-item__a">Use the contact form above with subject "Content / Documents" and describe the resource you'd like to see added to our collection.</p>
+            <p class="faq-item__a">Use the contact form above with subject "Content / Documents" and describe the resource you'd like to see added.</p>
           </div>
           <div class="faq-item">
             <div class="faq-item__q">The flipbook viewer isn't working — help!</div>
@@ -538,6 +607,9 @@
   <script src="assets/js/main.js" defer></script>
   <script src="assets/js/auth.js" defer></script>
   <script>
+    'use strict';
+
+    /* ── Navbar auth sync ── */
     (function () {
       var PAIRS = [['nav-admin','mobile-nav-admin'],['nav-logout','mobile-nav-logout']];
       function sync() {
@@ -557,28 +629,112 @@
           if (d) new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['style']});
         });
       });
+    })();
 
-      // Form submission handler
-      document.addEventListener('DOMContentLoaded', function () {
-        var form = document.getElementById('contact-form');
-        var successMsg = document.getElementById('form-success');
-        if (form) {
-          form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            var name = document.getElementById('first-name').value.trim();
-            var email = document.getElementById('email').value.trim();
-            var subject = document.getElementById('subject').value;
-            var message = document.getElementById('message').value.trim();
-            if (!name || !email || !subject || !message) {
-              alert('Please fill in all required fields.');
-              return;
-            }
-            form.style.display = 'none';
-            successMsg.style.display = 'block';
-          });
+    /* ── Contact Form — Firestore Submission ── */
+    document.addEventListener('DOMContentLoaded', function () {
+      var form       = document.getElementById('contact-form');
+      var successMsg = document.getElementById('form-success');
+      var submitBtn  = document.getElementById('submit-btn');
+      var submitErr  = document.getElementById('submit-error');
+
+      if (!form) return;
+
+      /* --- Validation helpers --- */
+      function setError(inputId, errId, show) {
+        var input = document.getElementById(inputId);
+        var err   = document.getElementById(errId);
+        if (!input || !err) return;
+        if (show) {
+          input.classList.add('error');
+          err.classList.add('visible');
+        } else {
+          input.classList.remove('error');
+          err.classList.remove('visible');
+        }
+        return show;
+      }
+
+      function validateEmail(val) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+      }
+
+      function validate() {
+        var firstName = document.getElementById('first-name').value.trim();
+        var email     = document.getElementById('email').value.trim();
+        var subject   = document.getElementById('subject').value;
+        var message   = document.getElementById('message').value.trim();
+        var hasError  = false;
+
+        if (setError('first-name', 'err-first-name', !firstName)) hasError = true;
+        if (setError('email',      'err-email',      !validateEmail(email))) hasError = true;
+        if (setError('subject',    'err-subject',    !subject)) hasError = true;
+        if (setError('message',    'err-message',    !message)) hasError = true;
+
+        return !hasError;
+      }
+
+      /* Clear error on input */
+      ['first-name','email','subject','message'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function() {
+          el.classList.remove('error');
+          var err = document.getElementById('err-' + id);
+          if (err) err.classList.remove('visible');
+          submitErr.style.display = 'none';
+        });
+      });
+
+      /* --- Submit --- */
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        submitErr.style.display = 'none';
+
+        if (!validate()) return;
+
+        /* Set loading state */
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+
+        var firstName = document.getElementById('first-name').value.trim();
+        var lastName  = document.getElementById('last-name').value.trim();
+        var email     = document.getElementById('email').value.trim();
+        var subject   = document.getElementById('subject').value;
+        var message   = document.getElementById('message').value.trim();
+
+        var payload = {
+          firstName : firstName,
+          lastName  : lastName,
+          fullName  : (firstName + (lastName ? ' ' + lastName : '')).trim(),
+          email     : email.toLowerCase(),
+          subject   : subject,
+          message   : message,
+          status    : 'unread',   // unread | read | resolved
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+
+        try {
+          /* Make sure Firebase is initialised (auth.js may have done this already) */
+          if (!firebase.apps.length) {
+            firebase.initializeApp(window.FIREBASE_CONFIG || FIREBASE_CONFIG);
+          }
+          var db = firebase.firestore();
+          await db.collection('messages').add(payload);
+
+          /* Show success */
+          form.style.display = 'none';
+          successMsg.style.display = 'block';
+
+        } catch (err) {
+          console.error('Firestore submit error:', err);
+          submitErr.textContent = 'Failed to send your message. Please check your connection and try again.';
+          submitErr.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
         }
       });
-    })();
+    });
   </script>
 </body>
 </html>
