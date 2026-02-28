@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Terms of Use for Syntax Archives — Read the rules and guidelines for using our platform." />
+  <meta name="theme-color" content="#0d0f14" />
+  <title>Terms of Use — Syntax Archives</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/auth.js" defer></script>
+
+  <style>
+    @media (max-width: 768px) { .navbar__actions { display: none !important; } }
+    button.navbar__link {
+      background: none; border: none; cursor: pointer;
+      width: 100%; text-align: left; padding: 0; margin: 0;
+      font: inherit; color: inherit; display: block;
+    }
+
+    .page-hero {
+      padding: 120px 0 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,169,110,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      background: rgba(200,169,110,0.08);
+      border: 1px solid rgba(200,169,110,0.18);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .page-hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--clr-text);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .page-hero__subtitle {
+      font-size: 1rem;
+      color: var(--clr-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .page-hero__meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--clr-text-faint);
+    }
+
+    /* ── Legal Layout ── */
+    .legal-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 48px;
+      padding: 60px 0 80px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .legal-layout { grid-template-columns: 1fr; } }
+
+    /* TOC Sidebar */
+    .toc {
+      position: sticky;
+      top: 88px;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+    @media (max-width: 900px) { .toc { position: static; } }
+    .toc__title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      margin-bottom: 16px;
+    }
+    .toc__list { display: flex; flex-direction: column; gap: 4px; }
+    .toc__link {
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      transition: background var(--t-fast), color var(--t-fast);
+      display: block;
+    }
+    .toc__link:hover {
+      background: var(--clr-surface-2);
+      color: var(--clr-accent);
+    }
+
+    /* Legal Content */
+    .legal-content { max-width: 780px; }
+    .legal-section { margin-bottom: 48px; }
+    .legal-section__num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      margin-bottom: 10px;
+    }
+    .legal-section__title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .legal-section p {
+      color: var(--clr-text-muted);
+      line-height: 1.8;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+    .legal-section ul {
+      list-style: none;
+      margin: 0 0 14px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .legal-section ul li {
+      display: flex;
+      gap: 12px;
+      color: var(--clr-text-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    .legal-section ul li::before {
+      content: '›';
+      color: var(--clr-accent);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .legal-section strong { color: var(--clr-text); }
+
+    .notice-box {
+      background: rgba(200,169,110,0.06);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .notice-box__icon { color: var(--clr-accent); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .notice-box p { margin: 0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDF Library home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        Syntax Archives
+      </a>
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="library.html" class="btn btn-outline btn-sm">Browse</a>
+        <a href="admin.html"   class="btn btn-ghost btn-sm"   id="nav-admin"   style="display:none">⚙ Admin</a>
+        <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
+      </div>
+      <button class="navbar__burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link">★ Premium</a>
+    <a href="admin.html"   class="navbar__link" id="mobile-nav-admin"  style="display:none">⚙ Admin</a>
+    <button               class="navbar__link" id="mobile-nav-logout" style="display:none">Logout</button>
+  </nav>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero__eyebrow">Legal</div>
+        <h1 class="page-hero__title">Terms of Use</h1>
+        <p class="page-hero__subtitle">Please read these terms carefully before using Syntax Archives. By accessing our platform, you agree to be bound by these terms.</p>
+        <div class="page-hero__meta">
+          <i class="bi bi-calendar3"></i> Last updated: January 1, 2026
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="legal-layout">
+
+        <!-- TOC Sidebar -->
+        <aside class="toc">
+          <div class="toc__title">On This Page</div>
+          <nav class="toc__list">
+            <a href="#acceptance" class="toc__link">1. Acceptance of Terms</a>
+            <a href="#use"        class="toc__link">2. Permitted Use</a>
+            <a href="#prohibited" class="toc__link">3. Prohibited Activities</a>
+            <a href="#content"    class="toc__link">4. Content & Intellectual Property</a>
+            <a href="#premium"    class="toc__link">5. Premium Access</a>
+            <a href="#disclaimer" class="toc__link">6. Disclaimers</a>
+            <a href="#liability"  class="toc__link">7. Limitation of Liability</a>
+            <a href="#changes"    class="toc__link">8. Changes to Terms</a>
+            <a href="#contact-legal" class="toc__link">9. Contact</a>
+          </nav>
+        </aside>
+
+        <!-- Main Legal Content -->
+        <div class="legal-content">
+
+          <div class="notice-box">
+            <i class="bi bi-info-circle-fill notice-box__icon"></i>
+            <p>These Terms of Use govern your access to and use of Syntax Archives, operated by <strong>Syntax Syndicate</strong>. By using this website, you confirm that you are at least 13 years of age and agree to these terms.</p>
+          </div>
+
+          <div class="legal-section" id="acceptance">
+            <div class="legal-section__num">Section 01</div>
+            <h2 class="legal-section__title">Acceptance of Terms</h2>
+            <p>By accessing or using Syntax Archives (the "Service"), you agree to be bound by these Terms of Use ("Terms"). If you disagree with any part of the terms, you do not have permission to access the Service.</p>
+            <p>These Terms apply to all visitors, users, and others who access or use the Service. Your continued use of the platform after any changes constitutes acceptance of the updated Terms.</p>
+          </div>
+
+          <div class="legal-section" id="use">
+            <div class="legal-section__num">Section 02</div>
+            <h2 class="legal-section__title">Permitted Use</h2>
+            <p>You may use Syntax Archives for the following lawful purposes:</p>
+            <ul>
+              <li>Browsing and reading documents available in the public library for personal educational use.</li>
+              <li>Accessing premium content using valid credentials provided for that purpose.</li>
+              <li>Sharing links to documents or pages on the platform with others for educational reference.</li>
+              <li>Using the platform on any personal device for studying, research, or academic purposes.</li>
+            </ul>
+          </div>
+
+          <div class="legal-section" id="prohibited">
+            <div class="legal-section__num">Section 03</div>
+            <h2 class="legal-section__title">Prohibited Activities</h2>
+            <p>You agree not to engage in any of the following:</p>
+            <ul>
+              <li>Downloading, reproducing, or redistributing any content without prior written permission from Syntax Syndicate.</li>
+              <li>Attempting to bypass, circumvent, or disable any authentication or access control mechanisms.</li>
+              <li>Using automated scripts, bots, or scrapers to access or harvest content from the platform.</li>
+              <li>Sharing login credentials with others or using another person's credentials to access premium content.</li>
+              <li>Uploading or transmitting any malicious code, viruses, or harmful content.</li>
+              <li>Using the Service in any way that could damage, disable, or impair the platform or its servers.</li>
+              <li>Representing that documents from this platform are your own original work.</li>
+            </ul>
+          </div>
+
+          <div class="legal-section" id="content">
+            <div class="legal-section__num">Section 04</div>
+            <h2 class="legal-section__title">Content & Intellectual Property</h2>
+            <p>All content available on Syntax Archives, including but not limited to PDF documents, text, graphics, logos, and the platform design, is the property of <strong>Syntax Syndicate</strong> or its content suppliers and is protected by applicable intellectual property laws.</p>
+            <p>Documents made available for public access are provided solely for personal, non-commercial educational use. You may not:</p>
+            <ul>
+              <li>Sell, license, or commercially exploit any content from this platform.</li>
+              <li>Modify or create derivative works based on the content without explicit permission.</li>
+              <li>Remove or alter any copyright, trademark, or proprietary notices from any content.</li>
+            </ul>
+            <p>If you believe any content on the platform infringes your intellectual property rights, please <a href="contact.html" style="color:var(--clr-accent)">contact us</a> immediately.</p>
+          </div>
+
+          <div class="legal-section" id="premium">
+            <div class="legal-section__num">Section 05</div>
+            <h2 class="legal-section__title">Premium Access</h2>
+            <p>Certain content on Syntax Archives is accessible only through a premium membership. Premium access credentials are issued on a per-user basis and are non-transferable.</p>
+            <ul>
+              <li>Premium credentials must not be shared with anyone else under any circumstances.</li>
+              <li>Syntax Syndicate reserves the right to revoke premium access at any time for violation of these Terms.</li>
+              <li>Premium content is subject to the same intellectual property restrictions as public content.</li>
+            </ul>
+          </div>
+
+          <div class="legal-section" id="disclaimer">
+            <div class="legal-section__num">Section 06</div>
+            <h2 class="legal-section__title">Disclaimers</h2>
+            <p>The Service is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis without any warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+            <p>We do not warrant that:</p>
+            <ul>
+              <li>The Service will be uninterrupted, timely, secure, or error-free.</li>
+              <li>The content provided is always accurate, complete, or current.</li>
+              <li>Any errors in the Service will be corrected.</li>
+            </ul>
+            <p>Academic documents are provided for informational and educational purposes only. Always verify information from authoritative sources before relying on it.</p>
+          </div>
+
+          <div class="legal-section" id="liability">
+            <div class="legal-section__num">Section 07</div>
+            <h2 class="legal-section__title">Limitation of Liability</h2>
+            <p>To the fullest extent permitted by applicable law, Syntax Syndicate shall not be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of profits, data, use, or goodwill — arising out of or in connection with your use of, or inability to use, the Service.</p>
+            <p>Our total liability to you for any claims arising from use of the Service shall not exceed the amount paid by you (if any) for accessing premium content in the preceding three months.</p>
+          </div>
+
+          <div class="legal-section" id="changes">
+            <div class="legal-section__num">Section 08</div>
+            <h2 class="legal-section__title">Changes to Terms</h2>
+            <p>We reserve the right to modify these Terms at any time. We will provide notice of significant changes by updating the "Last updated" date at the top of this page. Your continued use of the Service after any changes signifies your acceptance of the revised Terms.</p>
+            <p>We encourage you to review these Terms periodically to stay informed about your rights and obligations.</p>
+          </div>
+
+          <div class="legal-section" id="contact-legal">
+            <div class="legal-section__num">Section 09</div>
+            <h2 class="legal-section__title">Contact</h2>
+            <p>If you have any questions about these Terms of Use, please contact us:</p>
+            <div class="notice-box">
+              <i class="bi bi-envelope-fill notice-box__icon"></i>
+              <p>You can reach us via our <a href="contact.html" style="color:var(--clr-accent);">Contact page</a> or by visiting <a href="https://syntaxsyndicate.co.in" style="color:var(--clr-accent);">syntaxsyndicate.co.in</a>.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__logo" style="margin-bottom:0">
+            <div class="navbar__logo-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            Syntax Archives
+          </a>
+          <p>A modern academic digital library platform. Access curated study materials anywhere, on any device.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="library.html">Public Library</a></li>
+            <li><a href="premium.html">Premium Access</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="library.html">Computer Science</a></li>
+            <li><a href="library.html">Mathematics</a></li>
+            <li><a href="library.html">Physics</a></li>
+            <li><a href="library.html">Chemistry</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Use</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 Syntax Archives. All rights reserved.</span>
+        <span>Built by Syntax Syndicate for learners everywhere</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+  <script>
+    (function () {
+      var PAIRS = [['nav-admin','mobile-nav-admin'],['nav-logout','mobile-nav-logout']];
+      function sync() {
+        PAIRS.forEach(function (pair) {
+          var d = document.getElementById(pair[0]);
+          var m = document.getElementById(pair[1]);
+          if (d && m) m.style.display = d.style.display;
+        });
+      }
+      window.addEventListener('DOMContentLoaded', function () {
+        sync(); setTimeout(sync,300); setTimeout(sync,800); setTimeout(sync,2000);
+        var ml = document.getElementById('mobile-nav-logout');
+        var dl = document.getElementById('nav-logout');
+        if (ml && dl) ml.addEventListener('click', function(){ dl.click(); });
+        PAIRS.forEach(function(pair){
+          var d = document.getElementById(pair[0]);
+          if (d) new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['style']});
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

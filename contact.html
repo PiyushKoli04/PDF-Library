@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contact Syntax Archives — Get in touch with the Syntax Syndicate team." />
+  <meta name="theme-color" content="#0d0f14" />
+  <title>Contact Us — Syntax Archives</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/auth.js" defer></script>
+
+  <style>
+    @media (max-width: 768px) { .navbar__actions { display: none !important; } }
+    button.navbar__link {
+      background: none; border: none; cursor: pointer;
+      width: 100%; text-align: left; padding: 0; margin: 0;
+      font: inherit; color: inherit; display: block;
+    }
+
+    .page-hero {
+      padding: 120px 0 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(76,175,128,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--clr-success);
+      background: rgba(76,175,128,0.08);
+      border: 1px solid rgba(76,175,128,0.2);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .page-hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--clr-text);
+      margin-bottom: 20px;
+    }
+    .page-hero__subtitle {
+      font-size: 1rem;
+      color: var(--clr-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── Contact Layout ── */
+    .contact-section { padding: 60px 0 80px; }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 960px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    /* Form */
+    .contact-form-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+    }
+    .contact-form-card h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      margin-bottom: 8px;
+    }
+    .contact-form-card > p {
+      color: var(--clr-text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .form-label span {
+      color: var(--clr-success);
+      margin-left: 2px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--clr-surface-2);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-md);
+      color: var(--clr-text);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: 12px 16px;
+      transition: border-color var(--t-fast), box-shadow var(--t-fast);
+      outline: none;
+      appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--clr-success);
+      box-shadow: 0 0 0 3px rgba(76,175,128,0.12);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--clr-text-faint); }
+    .form-textarea { resize: vertical; min-height: 140px; line-height: 1.6; }
+    .form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a90a2' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    .form-select option { background: #1a1e29; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px 24px;
+      background: var(--clr-success);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+      transition: opacity var(--t-fast), transform var(--t-fast);
+    }
+    .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* Success state */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .form-success__icon {
+      width: 64px; height: 64px;
+      background: rgba(76,175,128,0.12);
+      border: 1px solid rgba(76,175,128,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      color: var(--clr-success);
+      margin: 0 auto 20px;
+    }
+    .form-success h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--clr-text);
+      margin-bottom: 10px;
+    }
+    .form-success p { color: var(--clr-text-muted); font-size: 0.9rem; }
+
+    /* Info Sidebar */
+    .contact-info { display: flex; flex-direction: column; gap: 20px; }
+
+    .info-card {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: border-color var(--t-normal), transform var(--t-normal);
+    }
+    .info-card:hover { border-color: rgba(76,175,128,0.25); transform: translateY(-2px); }
+
+    .info-card__header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .info-card__icon {
+      width: 44px; height: 44px;
+      background: rgba(76,175,128,0.1);
+      border: 1px solid rgba(76,175,128,0.2);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: var(--clr-success);
+      flex-shrink: 0;
+    }
+    .info-card__title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--clr-text);
+    }
+    .info-card__subtitle { font-size: 0.78rem; color: var(--clr-text-muted); margin-top: 2px; }
+    .info-card__body { font-size: 0.88rem; color: var(--clr-text-muted); line-height: 1.7; }
+    .info-card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      color: var(--clr-success);
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: gap var(--t-fast);
+    }
+    .info-card__link:hover { gap: 10px; }
+
+    /* FAQ Section */
+    .faq-section { padding: 0 0 80px; }
+    .faq-section .section-label { display: block; margin-bottom: 12px; color: var(--clr-success); }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    @media (max-width: 768px) { .faq-grid { grid-template-columns: 1fr; } }
+
+    .faq-item {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+    .faq-item__q {
+      font-family: var(--font-display);
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .faq-item__q::before {
+      content: 'Q';
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      background: rgba(76,175,128,0.12);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--clr-success);
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .faq-item__a {
+      font-size: 0.88rem;
+      color: var(--clr-text-muted);
+      line-height: 1.7;
+      padding-left: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDF Library home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        Syntax Archives
+      </a>
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="library.html" class="btn btn-outline btn-sm">Browse</a>
+        <a href="admin.html"   class="btn btn-ghost btn-sm"   id="nav-admin"   style="display:none">⚙ Admin</a>
+        <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
+      </div>
+      <button class="navbar__burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link">★ Premium</a>
+    <a href="admin.html"   class="navbar__link" id="mobile-nav-admin"  style="display:none">⚙ Admin</a>
+    <button               class="navbar__link" id="mobile-nav-logout" style="display:none">Logout</button>
+  </nav>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero__eyebrow"><i class="bi bi-chat-dots"></i> Get in Touch</div>
+        <h1 class="page-hero__title">Contact Us</h1>
+        <p class="page-hero__subtitle">Have a question, suggestion, or just want to say hello? We'd love to hear from you.</p>
+      </div>
+    </section>
+
+    <section class="contact-section">
+      <div class="container">
+        <div class="contact-grid">
+
+          <!-- Contact Form -->
+          <div class="contact-form-card">
+            <h2>Send a Message</h2>
+            <p>Fill in the form below and we'll get back to you within 48 hours.</p>
+
+            <form id="contact-form" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="first-name">First Name <span>*</span></label>
+                  <input type="text" id="first-name" class="form-input" placeholder="e.g. Arjun" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="last-name">Last Name</label>
+                  <input type="text" id="last-name" class="form-input" placeholder="e.g. Sharma" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="email">Email Address <span>*</span></label>
+                <input type="email" id="email" class="form-input" placeholder="you@example.com" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="subject">Subject <span>*</span></label>
+                <select id="subject" class="form-select form-input" required>
+                  <option value="" disabled selected>Select a topic…</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="premium">Premium Access</option>
+                  <option value="content">Content / Documents</option>
+                  <option value="bug">Bug Report</option>
+                  <option value="feedback">Feedback & Suggestions</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="message">Message <span>*</span></label>
+                <textarea id="message" class="form-textarea" placeholder="Tell us what's on your mind…" required></textarea>
+              </div>
+
+              <button type="submit" class="btn-submit">
+                <i class="bi bi-send-fill"></i> Send Message
+              </button>
+            </form>
+
+            <div class="form-success" id="form-success">
+              <div class="form-success__icon"><i class="bi bi-check-lg"></i></div>
+              <h3>Message Sent!</h3>
+              <p>Thanks for reaching out. We'll get back to you within 48 hours.</p>
+            </div>
+          </div>
+
+          <!-- Info Cards -->
+          <div class="contact-info">
+
+            <div class="info-card">
+              <div class="info-card__header">
+                <div class="info-card__icon"><i class="bi bi-globe"></i></div>
+                <div>
+                  <div class="info-card__title">Website</div>
+                  <div class="info-card__subtitle">Visit us online</div>
+                </div>
+              </div>
+              <p class="info-card__body">Learn more about Syntax Syndicate, our team, and our other projects on our main website.</p>
+              <a href="https://syntaxsyndicate.co.in" class="info-card__link" target="_blank" rel="noopener">
+                syntaxsyndicate.co.in <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card__header">
+                <div class="info-card__icon"><i class="bi bi-whatsapp"></i></div>
+                <div>
+                  <div class="info-card__title">WhatsApp Community</div>
+                  <div class="info-card__subtitle">Join the conversation</div>
+                </div>
+              </div>
+              <p class="info-card__body">Connect with fellow learners, get updates on new resources, and get help from our active community group.</p>
+              <a href="https://chat.whatsapp.com/E4uMWsORJwwAd4vt1Dx8ZZ" class="info-card__link" target="_blank" rel="noopener">
+                Join the Group <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card__header">
+                <div class="info-card__icon"><i class="bi bi-clock"></i></div>
+                <div>
+                  <div class="info-card__title">Response Time</div>
+                  <div class="info-card__subtitle">When to expect a reply</div>
+                </div>
+              </div>
+              <p class="info-card__body">We typically respond to all messages within <strong style="color:var(--clr-text)">48 hours</strong>. For urgent issues, the WhatsApp community is usually faster.</p>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card__header">
+                <div class="info-card__icon"><i class="bi bi-book"></i></div>
+                <div>
+                  <div class="info-card__title">Library</div>
+                  <div class="info-card__subtitle">Browse our documents</div>
+                </div>
+              </div>
+              <p class="info-card__body">Before reaching out, check if your question is answered by browsing our library or premium section.</p>
+              <a href="library.html" class="info-card__link">
+                Browse Library <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="text-center">
+          <span class="section-label" style="color:var(--clr-success)">FAQ</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-subtitle" style="margin-inline:auto">Quick answers to common questions.</p>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <div class="faq-item__q">Is the public library really free?</div>
+            <p class="faq-item__a">Yes, completely. All public documents are available to browse and read without any account or payment.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-item__q">How do I get premium access?</div>
+            <p class="faq-item__a">Premium credentials are issued by Syntax Syndicate. Use the login credentials provided to unlock the premium library vault.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-item__q">Can I download the PDFs?</div>
+            <p class="faq-item__a">Documents are intended for reading on-platform. Downloading for personal offline study may be permitted depending on the document's license.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-item__q">How can I suggest a document to add?</div>
+            <p class="faq-item__a">Use the contact form above with subject "Content / Documents" and describe the resource you'd like to see added to our collection.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-item__q">The flipbook viewer isn't working — help!</div>
+            <p class="faq-item__a">Try a hard refresh (Ctrl+Shift+R). If the issue persists, let us know your browser and OS via the bug report form above.</p>
+          </div>
+          <div class="faq-item">
+            <div class="faq-item__q">Who built this platform?</div>
+            <p class="faq-item__a">Syntax Archives was built by the <a href="https://syntaxsyndicate.co.in" style="color:var(--clr-success)">Syntax Syndicate</a> team — a group of passionate developers and students.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__logo" style="margin-bottom:0">
+            <div class="navbar__logo-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            Syntax Archives
+          </a>
+          <p>A modern academic digital library platform. Access curated study materials anywhere, on any device.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="library.html">Public Library</a></li>
+            <li><a href="premium.html">Premium Access</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="library.html">Computer Science</a></li>
+            <li><a href="library.html">Mathematics</a></li>
+            <li><a href="library.html">Physics</a></li>
+            <li><a href="library.html">Chemistry</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Use</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 Syntax Archives. All rights reserved.</span>
+        <span>Built by Syntax Syndicate for learners everywhere</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+  <script>
+    (function () {
+      var PAIRS = [['nav-admin','mobile-nav-admin'],['nav-logout','mobile-nav-logout']];
+      function sync() {
+        PAIRS.forEach(function (pair) {
+          var d = document.getElementById(pair[0]);
+          var m = document.getElementById(pair[1]);
+          if (d && m) m.style.display = d.style.display;
+        });
+      }
+      window.addEventListener('DOMContentLoaded', function () {
+        sync(); setTimeout(sync,300); setTimeout(sync,800); setTimeout(sync,2000);
+        var ml = document.getElementById('mobile-nav-logout');
+        var dl = document.getElementById('nav-logout');
+        if (ml && dl) ml.addEventListener('click', function(){ dl.click(); });
+        PAIRS.forEach(function(pair){
+          var d = document.getElementById(pair[0]);
+          if (d) new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['style']});
+        });
+      });
+
+      // Form submission handler
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('contact-form');
+        var successMsg = document.getElementById('form-success');
+        if (form) {
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var name = document.getElementById('first-name').value.trim();
+            var email = document.getElementById('email').value.trim();
+            var subject = document.getElementById('subject').value;
+            var message = document.getElementById('message').value.trim();
+            if (!name || !email || !subject || !message) {
+              alert('Please fill in all required fields.');
+              return;
+            }
+            form.style.display = 'none';
+            successMsg.style.display = 'block';
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

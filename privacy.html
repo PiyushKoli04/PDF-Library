@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Privacy Policy for Syntax Archives — How we collect, use, and protect your information." />
+  <meta name="theme-color" content="#0d0f14" />
+  <title>Privacy Policy — Syntax Archives</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/auth.js" defer></script>
+
+  <style>
+    @media (max-width: 768px) { .navbar__actions { display: none !important; } }
+    button.navbar__link {
+      background: none; border: none; cursor: pointer;
+      width: 100%; text-align: left; padding: 0; margin: 0;
+      font: inherit; color: inherit; display: block;
+    }
+
+    .page-hero {
+      padding: 120px 0 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,141,238,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--clr-accent-2);
+      background: rgba(91,141,238,0.08);
+      border: 1px solid rgba(91,141,238,0.2);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .page-hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--clr-text);
+      margin-bottom: 20px;
+    }
+    .page-hero__subtitle {
+      font-size: 1rem;
+      color: var(--clr-text-muted);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .page-hero__meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--clr-text-faint);
+    }
+
+    .legal-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 48px;
+      padding: 60px 0 80px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .legal-layout { grid-template-columns: 1fr; } }
+
+    .toc {
+      position: sticky;
+      top: 88px;
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+    @media (max-width: 900px) { .toc { position: static; } }
+    .toc__title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--clr-accent-2);
+      margin-bottom: 16px;
+    }
+    .toc__list { display: flex; flex-direction: column; gap: 4px; }
+    .toc__link {
+      font-size: 0.85rem;
+      color: var(--clr-text-muted);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      transition: background var(--t-fast), color var(--t-fast);
+      display: block;
+    }
+    .toc__link:hover { background: var(--clr-surface-2); color: var(--clr-accent-2); }
+
+    .legal-content { max-width: 780px; }
+    .legal-section { margin-bottom: 48px; }
+    .legal-section__num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--clr-accent-2);
+      margin-bottom: 10px;
+    }
+    .legal-section__title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--clr-text);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--clr-border);
+    }
+    .legal-section p {
+      color: var(--clr-text-muted);
+      line-height: 1.8;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+    .legal-section ul {
+      list-style: none; margin: 0 0 14px; padding: 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .legal-section ul li {
+      display: flex; gap: 12px;
+      color: var(--clr-text-muted);
+      font-size: 0.95rem; line-height: 1.7;
+    }
+    .legal-section ul li::before {
+      content: '›'; color: var(--clr-accent-2);
+      font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .legal-section strong { color: var(--clr-text); }
+
+    .notice-box {
+      background: rgba(91,141,238,0.06);
+      border: 1px solid rgba(91,141,238,0.2);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .notice-box__icon { color: var(--clr-accent-2); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .notice-box p { margin: 0; font-size: 0.9rem; color: var(--clr-text-muted); }
+
+    /* Data Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+    .data-table th {
+      background: var(--clr-surface-2);
+      color: var(--clr-text);
+      font-weight: 600;
+      padding: 12px 16px;
+      text-align: left;
+      border: 1px solid var(--clr-border);
+    }
+    .data-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--clr-border);
+      color: var(--clr-text-muted);
+      vertical-align: top;
+    }
+    .data-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <header class="navbar" role="banner">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="PDF Library home">
+        <div class="navbar__logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        Syntax Archives
+      </a>
+      <nav class="navbar__menu" role="navigation" aria-label="Primary navigation">
+        <a href="index.html"   class="navbar__link">Home</a>
+        <a href="library.html" class="navbar__link">Library</a>
+        <a href="premium.html" class="navbar__link">Premium</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="library.html" class="btn btn-outline btn-sm">Browse</a>
+        <a href="admin.html"   class="btn btn-ghost btn-sm"   id="nav-admin"   style="display:none">⚙ Admin</a>
+        <a href="premium.html" class="btn btn-primary btn-sm" id="nav-premium">★ Premium</a>
+        <button class="btn btn-ghost btn-sm" id="nav-logout" style="display:none">Logout</button>
+      </div>
+      <button class="navbar__burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="navbar__mobile" aria-label="Mobile navigation">
+    <a href="index.html"   class="navbar__link">Home</a>
+    <a href="library.html" class="navbar__link">Library</a>
+    <a href="premium.html" class="navbar__link">★ Premium</a>
+    <a href="admin.html"   class="navbar__link" id="mobile-nav-admin"  style="display:none">⚙ Admin</a>
+    <button               class="navbar__link" id="mobile-nav-logout" style="display:none">Logout</button>
+  </nav>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero__eyebrow"><i class="bi bi-shield-lock"></i> Privacy</div>
+        <h1 class="page-hero__title">Privacy Policy</h1>
+        <p class="page-hero__subtitle">Your privacy matters to us. This policy explains what information we collect, how we use it, and the choices you have.</p>
+        <div class="page-hero__meta">
+          <i class="bi bi-calendar3"></i> Last updated: January 1, 2026
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="legal-layout">
+
+        <aside class="toc">
+          <div class="toc__title">On This Page</div>
+          <nav class="toc__list">
+            <a href="#overview"   class="toc__link">1. Overview</a>
+            <a href="#collect"    class="toc__link">2. What We Collect</a>
+            <a href="#use-data"   class="toc__link">3. How We Use Data</a>
+            <a href="#storage"    class="toc__link">4. Data Storage</a>
+            <a href="#third"      class="toc__link">5. Third-Party Services</a>
+            <a href="#cookies"    class="toc__link">6. Cookies & Storage</a>
+            <a href="#rights"     class="toc__link">7. Your Rights</a>
+            <a href="#children"   class="toc__link">8. Children's Privacy</a>
+            <a href="#updates"    class="toc__link">9. Policy Updates</a>
+            <a href="#contact-privacy" class="toc__link">10. Contact</a>
+          </nav>
+        </aside>
+
+        <div class="legal-content">
+
+          <div class="notice-box">
+            <i class="bi bi-shield-check notice-box__icon"></i>
+            <p><strong>Short version:</strong> We keep it minimal. We do not sell your data. We do not show ads. The platform is largely stateless and uses only what's needed to provide the service.</p>
+          </div>
+
+          <div class="legal-section" id="overview">
+            <div class="legal-section__num">Section 01</div>
+            <h2 class="legal-section__title">Overview</h2>
+            <p>This Privacy Policy describes how <strong>Syntax Syndicate</strong> ("we", "us", or "our") collects, uses, and shares information when you use Syntax Archives ("the Service").</p>
+            <p>We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns, please <a href="contact.html" style="color:var(--clr-accent-2)">contact us</a>.</p>
+          </div>
+
+          <div class="legal-section" id="collect">
+            <div class="legal-section__num">Section 02</div>
+            <h2 class="legal-section__title">What We Collect</h2>
+            <p>We collect information in two ways: information you provide directly, and information collected automatically.</p>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data Type</th>
+                  <th>How Collected</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Login credentials (username)</td>
+                  <td>Entered by user</td>
+                  <td>Authentication for premium access</td>
+                </tr>
+                <tr>
+                  <td>Session data</td>
+                  <td>Automatically via localStorage</td>
+                  <td>Maintaining login state between pages</td>
+                </tr>
+                <tr>
+                  <td>Browser & device info</td>
+                  <td>Automatically via browser APIs</td>
+                  <td>Providing a responsive experience</td>
+                </tr>
+                <tr>
+                  <td>Contact form submissions</td>
+                  <td>Entered by user</td>
+                  <td>Responding to inquiries</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>We do <strong>not</strong> collect sensitive personal information such as payment details, government IDs, or biometric data.</p>
+          </div>
+
+          <div class="legal-section" id="use-data">
+            <div class="legal-section__num">Section 03</div>
+            <h2 class="legal-section__title">How We Use Your Data</h2>
+            <p>Information we collect is used strictly to operate and improve the Service:</p>
+            <ul>
+              <li>To authenticate users and manage access to premium content.</li>
+              <li>To maintain your session so you don't need to log in repeatedly.</li>
+              <li>To respond to your messages and support requests.</li>
+              <li>To monitor and analyze usage patterns to improve platform performance and content.</li>
+              <li>To protect the platform against abuse, fraud, and unauthorized access.</li>
+            </ul>
+            <p>We will <strong>never</strong> sell, rent, or trade your personal information to third parties for marketing purposes.</p>
+          </div>
+
+          <div class="legal-section" id="storage">
+            <div class="legal-section__num">Section 04</div>
+            <h2 class="legal-section__title">Data Storage & Security</h2>
+            <p>Syntax Archives is a primarily static platform. Most session data is stored locally in your browser's <code>localStorage</code> — it never leaves your device unless you interact with a form or backend service.</p>
+            <p>Where server-side data is involved (e.g., Firebase for authentication), we rely on industry-standard security practices provided by Google Firebase. We implement appropriate technical safeguards to prevent unauthorized access.</p>
+            <p>However, no method of transmission over the Internet is 100% secure. While we strive to use commercially acceptable means to protect your information, we cannot guarantee absolute security.</p>
+          </div>
+
+          <div class="legal-section" id="third">
+            <div class="legal-section__num">Section 05</div>
+            <h2 class="legal-section__title">Third-Party Services</h2>
+            <p>We use the following third-party services that may collect data as part of their operation:</p>
+            <ul>
+              <li><strong>Google Firebase</strong> — Backend services including authentication and data storage. Subject to Google's Privacy Policy.</li>
+              <li><strong>Google Fonts</strong> — Font loading. Google may log font requests. Subject to Google's Privacy Policy.</li>
+              <li><strong>Bootstrap Icons (jsDelivr CDN)</strong> — Icon delivery. Standard CDN request logging may apply.</li>
+            </ul>
+            <p>We encourage you to review the privacy policies of these third-party providers. We are not responsible for their privacy practices.</p>
+          </div>
+
+          <div class="legal-section" id="cookies">
+            <div class="legal-section__num">Section 06</div>
+            <h2 class="legal-section__title">Cookies & Local Storage</h2>
+            <p>We use <strong>localStorage</strong> (not traditional cookies) to store your authentication session. This data:</p>
+            <ul>
+              <li>Remains on your device and is not transmitted to our servers.</li>
+              <li>Is cleared when you log out or clear your browser's storage.</li>
+              <li>Is used only to keep you logged in between page visits.</li>
+            </ul>
+            <p>We do not use tracking cookies, advertising cookies, or any analytics cookies that profile your behavior across other websites.</p>
+          </div>
+
+          <div class="legal-section" id="rights">
+            <div class="legal-section__num">Section 07</div>
+            <h2 class="legal-section__title">Your Rights</h2>
+            <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+            <ul>
+              <li><strong>Access:</strong> Request a copy of the data we hold about you.</li>
+              <li><strong>Correction:</strong> Request correction of inaccurate data.</li>
+              <li><strong>Deletion:</strong> Request that we delete your personal data.</li>
+              <li><strong>Portability:</strong> Request your data in a machine-readable format.</li>
+              <li><strong>Objection:</strong> Object to how we process your data in certain circumstances.</li>
+            </ul>
+            <p>To exercise any of these rights, please <a href="contact.html" style="color:var(--clr-accent-2)">contact us</a>. We will respond within 30 days.</p>
+          </div>
+
+          <div class="legal-section" id="children">
+            <div class="legal-section__num">Section 08</div>
+            <h2 class="legal-section__title">Children's Privacy</h2>
+            <p>Syntax Archives is not directed to children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us and we will promptly delete it.</p>
+          </div>
+
+          <div class="legal-section" id="updates">
+            <div class="legal-section__num">Section 09</div>
+            <h2 class="legal-section__title">Policy Updates</h2>
+            <p>We may update this Privacy Policy from time to time. We will notify you of significant changes by updating the "Last updated" date at the top of this page. We encourage you to review this page periodically.</p>
+          </div>
+
+          <div class="legal-section" id="contact-privacy">
+            <div class="legal-section__num">Section 10</div>
+            <h2 class="legal-section__title">Contact</h2>
+            <p>If you have any questions about this Privacy Policy or our data practices, please reach out:</p>
+            <div class="notice-box">
+              <i class="bi bi-envelope-fill notice-box__icon"></i>
+              <p>Visit our <a href="contact.html" style="color:var(--clr-accent-2);">Contact page</a> or learn more at <a href="https://syntaxsyndicate.co.in" style="color:var(--clr-accent-2);">syntaxsyndicate.co.in</a>. We aim to respond within 48 hours.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="index.html" class="navbar__logo" style="margin-bottom:0">
+            <div class="navbar__logo-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            Syntax Archives
+          </a>
+          <p>A modern academic digital library platform. Access curated study materials anywhere, on any device.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="library.html">Public Library</a></li>
+            <li><a href="premium.html">Premium Access</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="library.html">Computer Science</a></li>
+            <li><a href="library.html">Mathematics</a></li>
+            <li><a href="library.html">Physics</a></li>
+            <li><a href="library.html">Chemistry</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Info</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Use</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 Syntax Archives. All rights reserved.</span>
+        <span>Built by Syntax Syndicate for learners everywhere</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/auth.js" defer></script>
+  <script>
+    (function () {
+      var PAIRS = [['nav-admin','mobile-nav-admin'],['nav-logout','mobile-nav-logout']];
+      function sync() {
+        PAIRS.forEach(function (pair) {
+          var d = document.getElementById(pair[0]);
+          var m = document.getElementById(pair[1]);
+          if (d && m) m.style.display = d.style.display;
+        });
+      }
+      window.addEventListener('DOMContentLoaded', function () {
+        sync(); setTimeout(sync,300); setTimeout(sync,800); setTimeout(sync,2000);
+        var ml = document.getElementById('mobile-nav-logout');
+        var dl = document.getElementById('nav-logout');
+        if (ml && dl) ml.addEventListener('click', function(){ dl.click(); });
+        PAIRS.forEach(function(pair){
+          var d = document.getElementById(pair[0]);
+          if (d) new MutationObserver(sync).observe(d,{attributes:true,attributeFilter:['style']});
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
