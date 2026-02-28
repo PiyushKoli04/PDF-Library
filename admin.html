@@ -780,7 +780,7 @@
             ${msg.status !== 'resolved' ? `<button class="msg-btn resolve" onclick="updateMsgStatus('${msg.id}','resolved')"><i class="bi bi-check-circle"></i> Mark Resolved</button>` : ''}
             ${msg.status === 'unread' ? `<button class="msg-btn" onclick="updateMsgStatus('${msg.id}','read')"><i class="bi bi-envelope-open"></i> Mark Read</button>` : ''}
             ${msg.status === 'resolved' ? `<button class="msg-btn" onclick="updateMsgStatus('${msg.id}','unread')"><i class="bi bi-arrow-counterclockwise"></i> Reopen</button>` : ''}
-            <a class="msg-btn" href="mailto:${escHtml(msg.email)}?subject=Re: ${encodeURIComponent(msg.subject)}" target="_blank"><i class="bi bi-reply"></i> Reply via Email</a>
+            <a class="msg-btn" href="mailto:${msg.email}?subject=${encodeURIComponent('Re: ' + msg.subject)}&body=${encodeURIComponent('Hi ' + (msg.firstName || msg.fullName) + ',\n\nThank you for reaching out.\n\n---\nYour original message:\n' + msg.message)}"><i class="bi bi-reply"></i> Reply via Email</a>
             <button class="msg-btn danger" onclick="deleteMessage('${msg.id}')"><i class="bi bi-trash"></i> Delete</button>
           </div>
         </div>
